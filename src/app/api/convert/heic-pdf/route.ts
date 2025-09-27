@@ -38,6 +38,7 @@ export async function POST(req: Request) {
     // Process each HEIC file
     for (const file of files) {
       try {
+        if (typeof file === 'string') continue; // Skip non-file entries
         const buffer = Buffer.from(await file.arrayBuffer());
         
         // Debug: Log file info
@@ -100,7 +101,7 @@ export async function POST(req: Request) {
         
         processedCount++;
       } catch (error) {
-        console.error(`Error processing ${file.name}:`, error);
+        console.error(`Error processing ${typeof file === 'string' ? 'string entry' : file.name}:`, error);
         // Continue with other files
       }
     }

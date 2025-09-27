@@ -64,33 +64,11 @@ export default function HomePage() {
                 </h2>
                 <Link href="/convert/image-converter" className="text-sm font-medium text-gray-700 hover:text-gray-900">Open</Link>
               </div>
-              <div className="rounded-xl border border-gray-300/50 bg-gray-100/60 p-3">
+              <div className="rounded-2xl border border-gray-300/50 bg-gray-100/60 p-3">
                 <ImageConverterHero />
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Feature Highlights */}
-      <section className="w-full px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {[ 
-            { title: 'Private by Design', desc: 'Client-side processing where possible. Your files stay with you.', icon: '🔒' },
-            { title: 'Fast Performance', desc: 'WASM/FFmpeg acceleration and tuned server fallbacks.', icon: '⚡' },
-            { title: 'Crisp Results', desc: 'Thoughtful defaults for quality and size balance.', icon: '🎯' },
-            { title: 'Totally Free', desc: 'No sign-up. No watermarks. No limits.', icon: '💎' },
-          ].map((f) => (
-            <div key={f.title} className="rounded-2xl border border-gray-300/50 bg-white/50 backdrop-blur-lg p-5 sm:p-6 shadow-sm">
-              <div className="flex items-start gap-3">
-                <div className="h-10 w-10 rounded-xl bg-gray-900/90 text-white flex items-center justify-center text-lg">{f.icon}</div>
-                <div>
-                  <h3 className="text-base font-semibold text-gray-900">{f.title}</h3>
-                  <p className="text-sm text-gray-700 mt-1">{f.desc}</p>
-                </div>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
     </>

@@ -9,12 +9,12 @@ export const metadata: Metadata = {
 
 export default function PngCompressorPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300">
-      <div className="container mx-auto px-4 pt-16 pb-6">
+    <div className="bg-white">
+      <div className="w-full px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-40 min-h-screen">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-6">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">PNG Compressor</h1>
-            <p className="text-lg text-gray-700 max-w-2xl mx-auto">
+            <h1 className="text-4xl font-extrabold text-gray-900 mb-4">PNG Compressor</h1>
+            <p className="text-base sm:text-lg text-gray-700 max-w-2xl mx-auto">
               Compress .png images in your browser or via server. Tune compression level and palette optimization.
             </p>
           </div>

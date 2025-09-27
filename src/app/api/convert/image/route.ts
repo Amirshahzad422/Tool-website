@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
     // Special handling: if target is svg and input is raster, sharp will embed raster into svg
     // This is acceptable for now per scope, true vectorization can be added later via potrace.
-    let pipeline = sharp(inputBuffer, { limitInputPixels: false });
+    const pipeline = sharp(inputBuffer, { limitInputPixels: false });
 
     let outputBuffer: Buffer;
     if (target === "png") {
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
       ext === "webp" ? "image/webp" :
       ext === "svg" ? "image/svg+xml" : "application/octet-stream";
 
-    return new NextResponse(outputBuffer, {
+    return new NextResponse(outputBuffer as BodyInit, {
       status: 200,
       headers: {
         "Content-Type": contentType,

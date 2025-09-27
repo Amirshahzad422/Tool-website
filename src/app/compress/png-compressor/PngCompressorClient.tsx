@@ -35,7 +35,8 @@ export default function PngCompressorClient() {
     setUploadingFileName("");
   };
 
-  const handleFileChange = (selectedFile: File) => {
+  const handleFileChange = (selectedFile: File | null) => {
+    if (!selectedFile) return;
     // Simulate upload progress similar to GIF/PDF
     setIsUploading(true);
     setUploadProgress(0);
@@ -146,34 +147,42 @@ export default function PngCompressorClient() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-3xl mx-auto">
       <div className="bg-transparent p-8">
         <div className="space-y-6">
           {/* File Upload */}
-          <FileUpload
-            onFileChange={handleFileChange}
-            maxFileSize={MAX_FILE_SIZE}
-            allowedMimeTypes={ALLOWED_MIME_TYPES}
-            allowedExtensions={ALLOWED_EXTENSIONS}
-            icon="🖼️"
-            placeholder="Upload a PNG file to compress"
-          />
+          <div className="mt-16 sm:mt-20 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-16 sm:p-20 text-center min-h-[220px]">
+            <div className="flex justify-center">
+              <div className="w-full max-w-xs">
+                <FileUpload
+                  placeholder="Choose Files"
+                  icon=""
+                  boxed={false}
+                  showHelp={false}
+                  maxFileSize={MAX_FILE_SIZE}
+                  allowedMimeTypes={ALLOWED_MIME_TYPES}
+                  allowedExtensions={ALLOWED_EXTENSIONS}
+                  onFileChange={handleFileChange}
+                  onError={setError}
+                  className="space-y-2"
+                />
+              </div>
+            </div>
+            <p className="mt-3 text-sm text-gray-600">Max file size 1GB. <a href="#" className="underline">Sign Up</a> for more</p>
+            <p className="mt-1 text-xs text-gray-500">By proceeding, you agree to our <a href="#" className="underline">Terms of Use</a>.</p>
+          </div>
 
           {/* Upload Progress */}
           {isUploading && (
-            <div className="bg-gray-200/50 border border-gray-300/50 rounded-xl p-6 backdrop-blur-sm">
+            <div className="mt-4 bg-white border border-gray-200 rounded-xl p-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                  <span className="text-sm font-medium text-gray-700">Uploading {uploadingFileName}...</span>
+                  <span className="text-sm text-gray-800">Uploading {uploadingFileName}…</span>
                 </div>
                 <span className="text-sm text-gray-500">{Math.round(uploadProgress)}%</span>
               </div>
-              <div className="w-full bg-gray-300/50 rounded-full h-2">
-                <div 
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
-                  style={{ width: `${uploadProgress}%` }}
-                ></div>
+              <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                <div className="bg-gray-700 h-2 rounded-full transition-all" style={{ width: `${uploadProgress}%` }} />
               </div>
             </div>
           )}
@@ -226,7 +235,7 @@ export default function PngCompressorClient() {
           )}
 
           {error && (
-            <div className="bg-red-200/50 border border-red-300/50 rounded-xl p-4 backdrop-blur-sm">
+            <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl" role="alert">
               <p className="text-red-700 text-sm">{error}</p>
             </div>
           )}
@@ -236,13 +245,13 @@ export default function PngCompressorClient() {
             <button
               onClick={compress}
               disabled={isProcessing}
-              className="w-full py-4 bg-gradient-to-r from-gray-900/90 to-gray-800/90 backdrop-blur-sm text-white font-semibold rounded-xl hover:from-gray-900 hover:to-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="mt-4 w-full py-4 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50"
             >
               <span className="flex items-center justify-center gap-3">
                 {isProcessing ? (
                   <>
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Compressing...
+                    Compressing…
                   </>
                 ) : (
                   <>
@@ -260,7 +269,7 @@ export default function PngCompressorClient() {
           {resultUrl && (
             <button
               onClick={download}
-              className="w-full py-4 bg-green-600/90 backdrop-blur-sm text-white font-semibold rounded-xl hover:bg-green-700/90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              className="mt-4 w-full py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-colors"
             >
               <span className="flex items-center justify-center gap-3">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

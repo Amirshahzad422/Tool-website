@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     try { unlinkSync(output); } catch {}
     try { rmdirSync(dir); } catch {}
 
-    return new NextResponse(out, {
+    return new NextResponse(out as BodyInit, {
       status: 200,
       headers: {
         'Content-Type': 'image/gif',

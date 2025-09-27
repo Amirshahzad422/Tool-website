@@ -29,6 +29,7 @@ export const useFileUpload = (options: FileUploadOptions = {}) => {
   const [error, setError] = useState<string | null>(null);
 
   const validateFile = useCallback((file: File): boolean => {
+    console.log('[useFileUpload] validateFile:', { name: file.name, size: file.size, type: file.type });
     // Check file size
     if (file.size > maxFileSize) {
       const errorMsg = `File size exceeds the limit of ${(maxFileSize / (1024 * 1024)).toFixed(0)}MB.`;
@@ -37,8 +38,8 @@ export const useFileUpload = (options: FileUploadOptions = {}) => {
       return false;
     }
 
-    // Check MIME type
-    if (allowedMimeTypes.length > 0 && !allowedMimeTypes.includes(file.type)) {
+    // Check MIME type (only when the browser provides one)
+    if (allowedMimeTypes.length > 0 && file.type && !allowedMimeTypes.includes(file.type)) {
       const errorMsg = 'Invalid file type. Please select a supported file format.';
       setError(errorMsg);
       onError?.(errorMsg);
@@ -61,7 +62,9 @@ export const useFileUpload = (options: FileUploadOptions = {}) => {
   }, [maxFileSize, allowedMimeTypes, allowedExtensions, onError]);
 
   const handleFileSelect = useCallback((file: File) => {
+    console.log('[useFileUpload] handleFileSelect received:', file?.name);
     if (validateFile(file)) {
+      console.log('[useFileUpload] file validated, calling onFileSelect');
       onFileSelect?.(file);
     }
   }, [validateFile, onFileSelect]);
@@ -70,23 +73,96 @@ export const useFileUpload = (options: FileUploadOptions = {}) => {
     fileInputRef.current?.click();
   }, []);
 
+  // Convert provider share links to direct download URLs
+  const toDirectDownloadUrl = useCallback((inputUrl: string): string => {
+    try {
+      const url = new URL(inputUrl.trim());
+
+      // Dropbox: append dl=1 or replace ?dl=0
+      if (url.hostname.includes('dropbox.com')) {
+        url.searchParams.set('dl', '1');
+        return url.toString();
+      }
+
+      // Google Drive: /file/d/<id>/view => uc?export=download&id=<id>
+      if (url.hostname.includes('drive.google.com')) {
+        const match = url.pathname.match(/\/file\/d\/([^/]+)\//);
+        const id = match?.[1] || url.searchParams.get('id');
+        if (id) {
+          return `https://drive.google.com/uc?export=download&id=${id}`;
+        }
+      }
+
+      // OneDrive: ensure download=1
+      if (url.hostname.includes('1drv.ms') || url.hostname.includes('onedrive.live.com')) {
+        if (!url.searchParams.get('download')) url.searchParams.set('download', '1');
+        return url.toString();
+      }
+
+      // Fallback: return as-is
+      return inputUrl;
+    } catch {
+      return inputUrl;
+    }
+  }, []);
+
+  // Fetch a file over HTTP(S) and convert to File instance
+  const importFromUrl = useCallback(async (rawUrl: string) => {
+    const directUrl = toDirectDownloadUrl(rawUrl);
+    try {
+      const res = await fetch(directUrl, { credentials: 'omit', mode: 'cors' });
+      if (!res.ok) throw new Error(`Failed to fetch file (status ${res.status})`);
+
+      const blob = await res.blob();
+
+      // Try to get filename from Content-Disposition
+      const cd = res.headers.get('Content-Disposition') || '';
+      let filename = '';
+      const dispoMatch = cd.match(/filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i);
+      if (dispoMatch) {
+        filename = decodeURIComponent(dispoMatch[1] || dispoMatch[2] || '').trim();
+      }
+      if (!filename) {
+        try {
+          const u = new URL(directUrl);
+          filename = (u.pathname.split('/').pop() || 'download').split('?')[0];
+        } catch {
+          filename = 'download';
+        }
+      }
+
+      const inferredType = blob.type || 'application/octet-stream';
+      const file = new File([blob], filename, { type: inferredType });
+      handleFileSelect(file);
+      setIsDropdownOpen(false);
+    } catch (e: unknown) {
+      const msg = (e instanceof Error ? e.message : null) || 'Unable to import file from URL. Some providers may block cross-origin downloads.';
+      setError(msg);
+      onError?.(msg);
+    }
+  }, [handleFileSelect, onError, toDirectDownloadUrl]);
+
+  const promptAndImport = useCallback(async (providerLabel: string) => {
+    const value = window.prompt(`Paste a public ${providerLabel} link to your file:`);
+    if (!value) return;
+    await importFromUrl(value);
+  }, [importFromUrl]);
+
   const handleDropboxUpload = useCallback(() => {
-    // TODO: Implement Dropbox integration
-    console.log('Dropbox upload clicked');
-    onError?.('Dropbox integration coming soon!');
-  }, [onError]);
+    promptAndImport('Dropbox');
+  }, [promptAndImport]);
 
   const handleGoogleDriveUpload = useCallback(() => {
-    // TODO: Implement Google Drive integration
-    console.log('Google Drive upload clicked');
-    onError?.('Google Drive integration coming soon!');
-  }, [onError]);
+    promptAndImport('Google Drive');
+  }, [promptAndImport]);
 
   const handleOneDriveUpload = useCallback(() => {
-    // TODO: Implement OneDrive integration
-    console.log('OneDrive upload clicked');
-    onError?.('OneDrive integration coming soon!');
-  }, [onError]);
+    promptAndImport('OneDrive');
+  }, [promptAndImport]);
+
+  const handleGenericUrlUpload = useCallback(() => {
+    promptAndImport('URL');
+  }, [promptAndImport]);
 
   const uploadSources: UploadSource[] = [
     {
@@ -112,13 +188,24 @@ export const useFileUpload = (options: FileUploadOptions = {}) => {
       label: 'From OneDrive',
       icon: '📁',
       action: handleOneDriveUpload
+    },
+    {
+      id: 'url',
+      label: 'From Url',
+      icon: '🔗',
+      action: handleGenericUrlUpload
     }
   ];
 
   const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('[useFileUpload] File input change event triggered!');
     const file = e.target.files?.[0];
+    console.log('[useFileUpload] input change, file:', file?.name);
+    console.log('[useFileUpload] files array:', e.target.files);
     if (file) {
       handleFileSelect(file);
+    } else {
+      console.log('[useFileUpload] No file selected');
     }
   }, [handleFileSelect]);
 
@@ -126,6 +213,7 @@ export const useFileUpload = (options: FileUploadOptions = {}) => {
     e.preventDefault();
     e.stopPropagation();
     const file = e.dataTransfer.files?.[0];
+    console.log('[useFileUpload] drop, file:', file?.name);
     if (file) {
       handleFileSelect(file);
     }

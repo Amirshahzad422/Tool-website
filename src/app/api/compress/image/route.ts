@@ -70,13 +70,13 @@ export async function POST(req: NextRequest) {
 
     const out = await image.toBuffer();
 
-    return new NextResponse(out, {
+    return new NextResponse(out as BodyInit, {
       headers: {
         "Content-Type": output === "png" ? "image/png" : output === "webp" ? "image/webp" : "image/jpeg",
         "Content-Disposition": `attachment; filename="compressed.${output}"`,
       },
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("Image compress error:", err);
     return NextResponse.json({ error: "Compression failed" }, { status: 500 });
   }

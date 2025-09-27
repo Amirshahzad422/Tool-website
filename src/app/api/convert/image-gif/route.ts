@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
           imagePaths.push(imagePath);
         } catch (sharpError) {
           console.error(`Error processing image ${i}:`, sharpError);
-          throw new Error(`Failed to process image ${imageFile.name}: ${sharpError.message}`);
+          throw new Error(`Failed to process image ${imageFile.name}: ${sharpError instanceof Error ? sharpError.message : 'Unknown error'}`);
         }
       }
 

@@ -149,97 +149,66 @@ export default function MP3ConverterClient() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="bg-transparent p-8">
-        <div className="space-y-6">
-          {/* File Upload */}
-          <FileUpload
-            onFileChange={handleFileChange}
-            maxFileSize={MAX_FILE_SIZE}
-            allowedMimeTypes={ALLOWED_MIME_TYPES}
-            allowedExtensions={ALLOWED_EXTENSIONS}
-            icon="🎵"
-            placeholder="Upload an audio file to convert to MP3"
-          />
-
-          {/* Upload Progress */}
-          {isUploading && (
-            <div className="bg-gray-200/50 border border-gray-300/50 rounded-xl p-6 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                  <span className="text-sm font-medium text-gray-700">Uploading {uploadingFileName}...</span>
-                </div>
-                <span className="text-sm text-gray-500">{Math.round(uploadProgress)}%</span>
-              </div>
-              <div className="w-full bg-gray-300/50 rounded-full h-2">
-                <div 
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
-                  style={{ width: `${uploadProgress}%` }}
-                />
-              </div>
-            </div>
-          )}
-
-          {error && (
-            <div className="bg-red-200/50 border border-red-300/50 rounded-xl p-4 backdrop-blur-sm">
-              <p className="text-red-700 text-sm">{error}</p>
-            </div>
-          )}
-
-          {/* Convert Button */}
-          <button
-            onClick={handleConvert}
-            disabled={!file || isLoading}
-            className="w-full py-4 bg-gradient-to-r from-gray-900/90 to-gray-800/90 backdrop-blur-sm text-white font-semibold rounded-xl hover:from-gray-900 hover:to-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-          >
-            <span className="flex items-center justify-center gap-3">
-              {isLoading ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Converting to MP3...
-                </>
-              ) : (
-                <>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-                  </svg>
-                  Convert to MP3
-                </>
-              )}
-            </span>
-          </button>
-
-          {/* Converting Progress */}
-          {isLoading && (
-            <div className="bg-gray-200/50 border border-gray-300/50 rounded-xl p-4 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-2 text-sm text-gray-700">
-                <span>Converting...</span>
-                <span>{Math.round(convertProgress)}%</span>
-              </div>
-              <div className="w-full bg-gray-300/50 rounded-full h-2">
-                <div
-                  className="bg-gradient-to-r from-gray-700 to-gray-800 h-2 rounded-full transition-all duration-300 ease-out"
-                  style={{ width: `${convertProgress}%` }}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Download Button */}
-          {convertedAudioUrl && (
-            <button
-              onClick={handleDownload}
-              className="w-full py-4 bg-green-600/90 backdrop-blur-sm text-white font-semibold rounded-xl hover:bg-green-700/90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-            >
-              <span className="flex items-center justify-center gap-3">
-                <ArrowDownTrayIcon className="w-5 h-5" />
-                Download MP3 File
-              </span>
-            </button>
-          )}
+    <div className="max-w-3xl mx-auto">
+      {/* Single outer dropzone like Video → GIF */}
+      <div className="mt-16 sm:mt-20 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-16 sm:p-20 text-center min-h-[220px]">
+        <div className="flex justify-center">
+          <div className="w-full max-w-xs">
+            <FileUpload
+              placeholder="Choose Files"
+              icon=""
+              boxed={false}
+              showHelp={false}
+              maxFileSize={MAX_FILE_SIZE}
+              allowedMimeTypes={ALLOWED_MIME_TYPES}
+              allowedExtensions={ALLOWED_EXTENSIONS}
+              onFileChange={handleFileChange}
+              onError={setError}
+              className="space-y-2"
+            />
+          </div>
         </div>
+        <p className="mt-3 text-sm text-gray-600">Max file size 1GB. <a href="#" className="underline">Sign Up</a> for more</p>
+        <p className="mt-1 text-xs text-gray-500">By proceeding, you agree to our <a href="#" className="underline">Terms of Use</a>.</p>
       </div>
+
+      {/* Upload progress pill */}
+      {isUploading && (
+        <div className="mt-4 bg-white border border-gray-200 rounded-xl p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-800">Uploading {uploadingFileName}…</span>
+            <span className="text-sm text-gray-600">{Math.round(uploadProgress)}%</span>
+          </div>
+          <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+            <div className="bg-gray-700 h-2 rounded-full transition-all" style={{ width: `${uploadProgress}%` }} />
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl" role="alert">
+          <span className="block sm:inline">{error}</span>
+        </div>
+      )}
+
+      {file && !convertedAudioUrl && (
+        <button
+          onClick={handleConvert}
+          disabled={isLoading}
+          className="mt-4 w-full py-4 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50"
+        >
+          {isLoading ? `Converting… ${Math.round(convertProgress)}%` : 'Convert to MP3'}
+        </button>
+      )}
+
+      {convertedAudioUrl && (
+        <button
+          onClick={handleDownload}
+          className="mt-4 w-full py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-colors"
+        >
+          Download MP3 File
+        </button>
+      )}
     </div>
   );
 }

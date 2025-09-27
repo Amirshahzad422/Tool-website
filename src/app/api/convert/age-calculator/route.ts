@@ -195,7 +195,7 @@ function calculateLifeMilestones(ageInDays: number) {
   const nextMilestone = milestones.find(m => !m.achieved);
   if (nextMilestone) {
     nextMilestone.achieved = false;
-    nextMilestone.daysUntil = nextMilestone.days - ageInDays;
+    (nextMilestone as any).daysUntil = nextMilestone.days - ageInDays;
   }
   
   return milestones;

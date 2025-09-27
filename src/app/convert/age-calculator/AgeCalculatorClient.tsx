@@ -179,7 +179,7 @@ export default function AgeCalculatorClient() {
                     max={new Date().toISOString().split('T')[0]}
                     className="w-full px-4 py-3 border border-gray-300/50 rounded-xl text-gray-900 bg-gray-300/50 focus:outline-none focus:ring-2 focus:ring-gray-500/50 focus:border-gray-500/50 transition-all duration-200"
                   />
-                  <p className="text-xs text-gray-600 mt-1">Leave empty to use today's date</p>
+                  <p className="text-xs text-gray-600 mt-1">Leave empty to use today&apos;s date</p>
                 </div>
               </div>
 

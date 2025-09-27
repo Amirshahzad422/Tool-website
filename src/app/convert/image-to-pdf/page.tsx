@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import FileUpload from '@/components/FileUpload';
 
 export default function ImageToPdfPage() {
@@ -50,7 +50,6 @@ export default function ImageToPdfPage() {
         setTimeout(() => {
           setIsUploading(false);
           setUploadProgress(100);
-          // Append new file to the list, preserving order and avoiding duplicates by name+size
           setFiles(prev => {
             const exists = prev.some(f => f.name === selectedFile.name && f.size === selectedFile.size);
             if (exists) return prev;
@@ -63,7 +62,6 @@ export default function ImageToPdfPage() {
     }, 150);
   };
 
-
   async function handleConvert() {
     if (files.length === 0) return;
 
@@ -75,14 +73,15 @@ export default function ImageToPdfPage() {
       if (current >= 95) current = 95;
       setConvertProgress(current);
     }, 200);
+
     try {
       const formData = new FormData();
       files.forEach((file) => formData.append("files", file));
 
       const res = await fetch("/api/convert/image-to-pdf", { method: "POST", body: formData });
       if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || "Failed to convert images to PDF");
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to convert images to PDF");
       }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
@@ -92,11 +91,7 @@ export default function ImageToPdfPage() {
       setConvertProgress(100);
     } catch (err) {
       console.error(err);
-      if (err instanceof Error) {
-        alert(`Conversion failed: ${err.message}`);
-      } else {
-        alert("Conversion failed. Please ensure all files are valid images and try again.");
-      }
+      setError(err instanceof Error ? `Conversion failed: ${err.message}` : 'Conversion failed. Please try again.');
     } finally {
       clearInterval(interval);
       setIsLoading(false);
@@ -105,7 +100,6 @@ export default function ImageToPdfPage() {
 
   function handleDownload() {
     if (!convertedPdfUrl || !convertedFileName) return;
-
     const a = document.createElement("a");
     a.href = convertedPdfUrl;
     a.download = convertedFileName;
@@ -114,142 +108,102 @@ export default function ImageToPdfPage() {
     a.remove();
   }
 
-
-  // Revoke created object URLs when files list changes
   useEffect(() => {
     return () => {
-      // no persistent URLs to revoke here as we create per render in img src
+      // no persistent URLs to revoke here
     };
   }, [files]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300">
-      <div className="container mx-auto px-4 pt-16 pb-6">
+    <div className="bg-white">
+      <div className="w-full px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-40 min-h-screen">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-6">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Image to PDF Converter
-            </h1>
-            <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-              Convert images to PDF format with high quality and professional layout.
-            </p>
+            <h1 className="text-4xl font-extrabold text-gray-900 mb-2">Image to PDF Converter</h1>
+            <p className="text-base sm:text-lg text-gray-700 max-w-2xl mx-auto">Convert images to PDF format with high quality and professional layout.</p>
           </div>
-          
-          <div className="max-w-2xl mx-auto">
+
+          <div className="max-w-3xl mx-auto">
             <div className="bg-transparent p-8">
               <div className="space-y-6">
-                {/* Upload Area */}
                 <FileUpload
                   placeholder="Choose Files"
-                  icon="📸"
+                  icon=""
                   maxFileSize={MAX_FILE_SIZE}
                   allowedMimeTypes={ALLOWED_MIME_TYPES}
                   allowedExtensions={ALLOWED_EXTENSIONS}
                   onFileChange={handleFileChange}
                   onError={setError}
                 />
-
-                {/* Upload Progress */}
-                {isUploading && (
-                  <div className="bg-gray-200/50 border border-gray-300/50 rounded-xl p-6 backdrop-blur-sm">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                        <span className="text-sm font-medium text-gray-700">Uploading {uploadingFileName}...</span>
-                      </div>
-                      <span className="text-sm text-gray-500">{Math.round(uploadProgress)}%</span>
-                    </div>
-                    <div className="w-full bg-gray-300/50 rounded-full h-2">
-                      <div 
-                        className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
-                        style={{ width: `${uploadProgress}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                )}
-
-                {error && (
-                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl relative" role="alert">
-                    <span className="block sm:inline">{error}</span>
-                  </div>
-                )}
-
-                {/* Selected Files List */}
-                {files.length > 0 && (
-                  <div className="bg-gray-200/50 border border-gray-300/50 rounded-xl p-4 backdrop-blur-sm">
-                    <div className="text-sm text-gray-700 font-medium mb-2">Selected images ({files.length})</div>
-                    <ul className="max-h-40 overflow-auto space-y-1 text-sm text-gray-700">
-                      {files.map((f, idx) => (
-                        <li key={idx} className="flex justify-between">
-                          <span className="truncate mr-3">{f.name}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Convert Button - Only show after file upload and before conversion */}
-                {files.length > 0 && !convertedPdfUrl && (
-                  <button
-                    onClick={handleConvert}
-                    disabled={isLoading}
-                    className="w-full py-4 bg-gradient-to-r from-gray-900/90 to-gray-800/90 backdrop-blur-sm text-white font-semibold rounded-xl hover:from-gray-900 hover:to-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none relative z-10"
-                  >
-                    <span className="flex items-center justify-center gap-3">
-                      {isLoading ? (
-                        <>
-                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          Converting to PDF...
-                        </>
-                      ) : (
-                        <>
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-                          </svg>
-                          Convert to PDF
-                        </>
-                      )}
-                    </span>
-                  </button>
-                )}
-
-                {/* Converting Progress */}
-                {isLoading && (
-                  <div className="bg-gray-200/50 border border-gray-300/50 rounded-xl p-6 backdrop-blur-sm">
-                    <div className="flex items-center justify-between mb-2 text-sm text-gray-700">
-                      <span>Converting to PDF...</span>
-                      <span>{Math.round(convertProgress)}%</span>
-                    </div>
-                    <div className="w-full bg-gray-300/50 rounded-full h-2">
-                      <div
-                        className="bg-gradient-to-r from-gray-700 to-gray-800 h-2 rounded-full transition-all duration-300 ease-out"
-                        style={{ width: `${convertProgress}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Download Button - Only show after conversion */}
-                {convertedPdfUrl && (
-                  <button
-                    onClick={handleDownload}
-                    className="w-full py-3 bg-green-600/80 backdrop-blur-sm text-white font-medium rounded-xl hover:bg-green-700/90 transition-all duration-300 shadow-lg hover:shadow-xl relative z-10"
-                  >
-                    <span className="flex items-center justify-center gap-3">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                      Download PDF File
-                    </span>
-                  </button>
-                )}
               </div>
             </div>
+            <p className="mt-3 text-sm text-gray-600">Max file size 1GB. <a href="#" className="underline">Sign Up</a> for more</p>
+            <p className="mt-1 text-xs text-gray-500">By proceeding, you agree to our <a href="#" className="underline">Terms of Use</a>.</p>
           </div>
+
+          {isUploading && (
+            <div className="mt-4 bg-white border border-gray-200 rounded-xl p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-800">Uploading {uploadingFileName}…</span>
+                <span className="text-sm text-gray-600">{Math.round(uploadProgress)}%</span>
+              </div>
+              <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                <div className="bg-gray-700 h-2 rounded-full transition-all" style={{ width: `${uploadProgress}%` }} />
+              </div>
+            </div>
+          )}
+
+          {error && (
+            <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl" role="alert">
+              <span className="block sm:inline">{error}</span>
+            </div>
+          )}
+
+          {files.length > 0 && (
+            <div className="bg-gray-200/50 border border-gray-300/50 rounded-xl p-4 backdrop-blur-sm mt-4">
+              <div className="text-sm text-gray-700 font-medium mb-2">Selected images ({files.length})</div>
+              <ul className="max-h-40 overflow-auto space-y-1 text-sm text-gray-700">
+                {files.map((f, idx) => (
+                  <li key={idx} className="flex justify-between">
+                    <span className="truncate mr-3">{f.name}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {files.length > 0 && !convertedPdfUrl && (
+            <button
+              onClick={handleConvert}
+              disabled={isLoading}
+              className="mt-4 w-full py-4 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50"
+            >
+              {isLoading ? `Converting… ${Math.round(convertProgress)}%` : 'Convert to PDF'}
+            </button>
+          )}
+
+          {isLoading && (
+            <div className="bg-gray-200/50 border border-gray-300/50 rounded-xl p-6 backdrop-blur-sm mt-4">
+              <div className="flex items-center justify-between mb-2 text-sm text-gray-700">
+                <span>Converting…</span>
+                <span>{Math.round(convertProgress)}%</span>
+              </div>
+              <div className="w-full bg-gray-300/50 rounded-full h-2">
+                <div className="bg-gradient-to-r from-gray-700 to-gray-800 h-2 rounded-full transition-all duration-300 ease-out" style={{ width: `${convertProgress}%` }} />
+              </div>
+            </div>
+          )}
+
+          {convertedPdfUrl && (
+            <button
+              onClick={handleDownload}
+              className="mt-4 w-full py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-colors"
+            >
+              Download PDF File
+            </button>
+          )}
         </div>
       </div>
     </div>
   );
 }
-
-

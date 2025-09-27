@@ -35,6 +35,7 @@ export async function POST(req: Request) {
     // Process each JPG file
     for (const file of files) {
       try {
+        if (typeof file === 'string') continue; // Skip non-file entries
         // Get file buffer
         const buffer = Buffer.from(await file.arrayBuffer());
 
@@ -67,7 +68,7 @@ export async function POST(req: Request) {
           height: height * scale,
         });
       } catch (error) {
-        console.error(`Error processing ${file.name}:`, error);
+        console.error(`Error processing ${typeof file === 'string' ? 'string entry' : file.name}:`, error);
         // Continue with other files
       }
     }

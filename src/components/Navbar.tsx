@@ -33,7 +33,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-transparent md:hidden">
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-200 md:hidden">
       <nav className="w-full px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
         <div className="flex items-center gap-4 sm:gap-12">
           <Link href="/" className="group flex items-center gap-3 font-bold tracking-tight text-2xl text-gray-900 hover:text-gray-700 transition-colors">

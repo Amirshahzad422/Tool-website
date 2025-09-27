@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 
     const bytes = await outPdf.save({ useObjectStreams: false, addDefaultPage: false });
 
-    return new NextResponse(bytes, {
+    return new NextResponse(bytes as BodyInit, {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="compressed.pdf"`,

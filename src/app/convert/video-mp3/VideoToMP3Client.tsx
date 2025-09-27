@@ -120,7 +120,7 @@ export default function VideoToMP3Client() {
 
       // Read output file
       const data = await ffmpeg.readFile(outputName);
-      const blob = new Blob([data], { type: "audio/mpeg" });
+      const blob = new Blob([data as BlobPart], { type: "audio/mpeg" });
       const url = URL.createObjectURL(blob);
 
       setMp3(url);

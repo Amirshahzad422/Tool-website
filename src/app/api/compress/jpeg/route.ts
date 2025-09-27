@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
     const out = await sharp(input).jpeg({ quality, mozjpeg: true, progressive }).toBuffer();
 
-    return new NextResponse(out, {
+    return new NextResponse(out as BodyInit, {
       headers: {
         "Content-Type": "image/jpeg",
         "Content-Disposition": `attachment; filename="compressed.jpg"`,

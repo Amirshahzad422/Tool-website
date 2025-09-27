@@ -165,7 +165,7 @@ export default function MP4ToMP3Client() {
       // Read the result
       console.log('Reading output file...');
       const data = await ffmpeg.readFile(outputFileName);
-      const blob = new Blob([data], { type: 'audio/mpeg' });
+              const blob = new Blob([data as BlobPart], { type: 'audio/mpeg' });
       
       const url = URL.createObjectURL(blob);
       setConvertedAudioUrl(url);
@@ -213,70 +213,57 @@ export default function MP4ToMP3Client() {
 
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="bg-transparent p-8">
-          <div className="space-y-6">
-          {/* Upload Area */}
-          <FileUpload
-            placeholder="Choose Files"
-            icon="🎬"
-            maxFileSize={MAX_FILE_SIZE}
-            allowedMimeTypes={ALLOWED_MIME_TYPES}
-            allowedExtensions={supportedVideoFormats}
-            onFileChange={handleFileChange}
-            onError={setError}
-          />
-
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl relative" role="alert">
-              <span className="block sm:inline">{error}</span>
-            </div>
-          )}
-
-            {/* Convert Button - Only show after file upload and before conversion */}
-            {file && !convertedAudioUrl && (
-              <button
-                onClick={handleConvert}
-                disabled={isLoading || !isFFmpegLoaded}
-                className="w-full py-4 bg-gradient-to-r from-gray-900/90 to-gray-800/90 backdrop-blur-sm text-white font-semibold rounded-xl hover:from-gray-900 hover:to-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none relative z-10"
-              >
-                <span className="flex items-center justify-center gap-3">
-                  {isLoading ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Converting to MP3...
-                    </>
-                  ) : !isFFmpegLoaded ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Loading Converter...
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-                      </svg>
-                      Convert to MP3
-                    </>
-                  )}
-                </span>
-              </button>
-            )}
-
-              {/* Download Button */}
-          {convertedAudioUrl && (
-              <button
-                onClick={handleDownload}
-              className="w-full py-3 bg-green-600/80 backdrop-blur-sm text-white font-medium rounded-xl hover:bg-green-700/90 transition-all duration-300 shadow-lg hover:shadow-xl"
-            >
-              <span className="flex items-center justify-center gap-3">
-                <ArrowDownTrayIcon className="w-5 h-5" />
-                Download MP3 File
-              </span>
-              </button>
-          )}
+    <div className="max-w-3xl mx-auto">
+      {/* Single outer dropzone like Video → GIF */}
+      <div className="mt-16 sm:mt-20 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-16 sm:p-20 text-center min-h-[220px]">
+        <div className="flex justify-center">
+          <div className="w-full max-w-xs">
+            <FileUpload
+              placeholder="Choose Files"
+              icon=""
+              boxed={false}
+              showHelp={false}
+              maxFileSize={MAX_FILE_SIZE}
+              allowedMimeTypes={ALLOWED_MIME_TYPES}
+              allowedExtensions={supportedVideoFormats}
+              onFileChange={handleFileChange}
+              onError={setError}
+              className="space-y-2"
+            />
+          </div>
         </div>
+        <p className="mt-3 text-sm text-gray-600">Max file size 1GB. <a href="#" className="underline">Sign Up</a> for more</p>
+        <p className="mt-1 text-xs text-gray-500">By proceeding, you agree to our <a href="#" className="underline">Terms of Use</a>.</p>
       </div>
+
+      {error && (
+        <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl" role="alert">
+          <span className="block sm:inline">{error}</span>
+        </div>
+      )}
+
+      {file && !convertedAudioUrl && (
+        <button
+          onClick={handleConvert}
+          disabled={isLoading || !isFFmpegLoaded}
+          className="mt-4 w-full py-4 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50"
+        >
+          {isLoading
+            ? `Converting…`
+            : !isFFmpegLoaded
+            ? `Loading Converter…`
+            : `Convert to MP3`}
+        </button>
+      )}
+
+      {convertedAudioUrl && (
+        <button
+          onClick={handleDownload}
+          className="mt-4 w-full py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-colors"
+        >
+          Download MP3 File
+        </button>
+      )}
     </div>
   );
 }

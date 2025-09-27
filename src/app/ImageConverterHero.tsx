@@ -93,13 +93,13 @@ export default function ImageConverterHero() {
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       setConvertedImageUrl(url);
-      const newFileName = file.name.replace(/\.[^/.]+$/, "") + `.${target === 'jpeg' ? 'jpg' : target}`;
+      const newFileName = file.name.replace(/\.[^/.]+$/, "") + `.${target}`;
       setConvertedFileName(newFileName);
       setConvertProgress(100);
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Conversion error:', err);
-      setError(err.message || 'Failed to convert image. Please try again.');
+      setError(err instanceof Error ? err.message : 'Failed to convert image. Please try again.');
     } finally {
       setIsLoading(false);
     }
