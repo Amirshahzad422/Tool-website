@@ -133,6 +133,16 @@ export async function POST(request: NextRequest) {
       // Get video information first
       const videoInfo = await getVideoInfo(inputPath);
 
+      // Check if the video has an audio stream
+      if (!videoInfo.audioCodec) {
+        return NextResponse.json({ 
+          success: false,
+          warning: "The selected video file does not contain any audio track. Please select a video file with audio.",
+          hasAudio: false,
+          videoInfo: videoInfo
+        }, { status: 200 }); // Return 200 with warning instead of error
+      }
+
       // Build FFmpeg command for MP4 to MP3 conversion
       let ffmpegCommand = `ffmpeg -i "${inputPath}"`;
 

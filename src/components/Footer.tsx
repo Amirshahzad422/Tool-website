@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="border-t border-gray-800/30 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <footer className="border-t border-gray-200 bg-[#080c2a]">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
         <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-4 lg:gap-6 items-start">
           {/* Company Info (hidden on mobile to keep 3 inline columns) */}

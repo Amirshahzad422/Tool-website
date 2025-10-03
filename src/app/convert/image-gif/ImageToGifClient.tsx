@@ -7,6 +7,7 @@ export default function ImageToGifClient() {
   const [images, setImages] = useState<File[]>([]);
   const [gifUrl, setGifUrl] = useState<string | null>(null);
   const [convertedFileName, setConvertedFileName] = useState<string>("");
+  const [convertedFileSize, setConvertedFileSize] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [delay, setDelay] = useState(500); // milliseconds between frames
@@ -27,6 +28,7 @@ export default function ImageToGifClient() {
     setImages([]);
     setGifUrl(null);
     setConvertedFileName('');
+    setConvertedFileSize(0);
     setError(null);
     setIsUploading(false);
     setUploadProgress(0);
@@ -45,6 +47,7 @@ export default function ImageToGifClient() {
     setError(null);
     setGifUrl(null);
     setConvertedFileName('');
+    setConvertedFileSize(0);
 
     let current = 0;
     const interval = setInterval(() => {
@@ -120,6 +123,7 @@ export default function ImageToGifClient() {
         const blob = await response.blob();
         const url = URL.createObjectURL(blob);
         setGifUrl(url);
+        setConvertedFileSize(blob.size);
         setConvertedFileName("animated.gif");
         setIsLoading(false);
         setProgress(0);
@@ -187,6 +191,7 @@ export default function ImageToGifClient() {
       const url = URL.createObjectURL(blob);
 
       setGifUrl(url);
+      setConvertedFileSize(blob.size);
       setConvertedFileName("animated.gif");
       console.log('Client-side conversion successful');
     } catch (err) {
@@ -224,27 +229,28 @@ export default function ImageToGifClient() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      {/* Single outer dropzone to match other tools */}
-      <div className="mt-16 sm:mt-20 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-16 sm:p-20 text-center min-h-[220px]">
-        <div className="flex justify-center">
-          <div className="w-full max-w-xs">
-            <FileUpload
-              placeholder="Choose Files"
-              icon=""
-              boxed={false}
-              showHelp={false}
-              maxFileSize={MAX_FILE_SIZE}
-              allowedMimeTypes={ALLOWED_MIME_TYPES}
-              allowedExtensions={ALLOWED_EXTENSIONS}
-              onFileChange={(files) => handleFileChange(files ? Array.isArray(files) ? files : [files] : null)}
-              onError={setError}
-              className="space-y-2"
-            />
-          </div>
-        </div>
-        <p className="mt-3 text-sm text-gray-600">Max file size 1GB. <a href="#" className="underline">Sign Up</a> for more</p>
-        <p className="mt-1 text-xs text-gray-500">By proceeding, you agree to our <a href="#" className="underline">Terms of Use</a>.</p>
-      </div>
+      <FileUpload
+        placeholder="Choose Files"
+        icon=""
+        boxed={false}
+        showHelp={false}
+        maxFileSize={MAX_FILE_SIZE}
+        allowedMimeTypes={ALLOWED_MIME_TYPES}
+        allowedExtensions={ALLOWED_EXTENSIONS}
+        onFileChange={(files) => handleFileChange(files ? Array.isArray(files) ? files : [files] : null)}
+        onError={setError}
+        actionButtonText="Convert to GIF"
+        onAction={handleConvert}
+        isLoading={isLoading}
+        showResult={!!gifUrl}
+        resultUrl={gifUrl || undefined}
+        resultFileName={convertedFileName}
+        resultFileSize={convertedFileSize}
+        onDownload={handleDownload}
+        className="space-y-2"
+      />
+    </div>
+  );
 
           {/* Upload Progress */}
           {isUploading && (

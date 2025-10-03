@@ -7,6 +7,7 @@ export default function JpgToPdfClient() {
   const [files, setFiles] = useState<File[]>([]);
   const [convertedPdf, setConvertedPdf] = useState<string | null>(null);
   const [convertedFileName, setConvertedFileName] = useState<string>("");
+  const [convertedFileSize, setConvertedFileSize] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -22,6 +23,7 @@ export default function JpgToPdfClient() {
     setFiles([]);
     setConvertedPdf(null);
     setConvertedFileName('');
+    setConvertedFileSize(0);
     setError(null);
     setIsUploading(false);
     setUploadProgress(0);
@@ -41,6 +43,7 @@ export default function JpgToPdfClient() {
     setError(null);
     setConvertedPdf(null);
     setConvertedFileName('');
+    setConvertedFileSize(0);
 
     let current = 0;
     const interval = setInterval(() => {
@@ -96,6 +99,11 @@ export default function JpgToPdfClient() {
       setConvertedFileName(files.length === 1 
         ? files[0].name.replace(/\.(jpg|jpeg)$/i, '.pdf')
         : 'converted.pdf');
+      
+      // Calculate file size from base64
+      const base64Size = (data.base64.length * 3) / 4;
+      setConvertedFileSize(Math.round(base64Size));
+      
       setConvertProgress(100);
     } catch (error) {
       console.error('Conversion failed:', error);
@@ -123,19 +131,29 @@ export default function JpgToPdfClient() {
 
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="bg-transparent p-8">
-        <div className="space-y-6">
-          {/* Upload Area */}
-          <FileUpload
-            placeholder="Choose Files"
-            icon="📷"
-            maxFileSize={MAX_FILE_SIZE}
-            allowedMimeTypes={ALLOWED_MIME_TYPES}
-            allowedExtensions={ALLOWED_EXTENSIONS}
-            onFileChange={handleFileChange}
-            onError={setError}
-          />
+    <div className="max-w-3xl mx-auto">
+      <FileUpload
+        placeholder="Choose Files"
+        icon=""
+        boxed={false}
+        showHelp={false}
+        maxFileSize={MAX_FILE_SIZE}
+        allowedMimeTypes={ALLOWED_MIME_TYPES}
+        allowedExtensions={ALLOWED_EXTENSIONS}
+        onFileChange={handleFileChange}
+        onError={setError}
+        actionButtonText="Convert to PDF"
+        onAction={handleConvert}
+        isLoading={isLoading}
+        showResult={!!convertedPdf}
+        resultUrl={convertedPdf || undefined}
+        resultFileName={convertedFileName}
+        resultFileSize={convertedFileSize}
+        onDownload={handleDownload}
+        className="space-y-2"
+      />
+    </div>
+  );
 
           {/* Upload Progress */}
           {isUploading && (

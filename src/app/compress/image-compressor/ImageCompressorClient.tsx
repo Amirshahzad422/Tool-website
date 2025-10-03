@@ -131,7 +131,6 @@ export default function ImageCompressorClient() {
     document.body.removeChild(a);
   };
 
-
   const formatBytes = (bytes: number) => {
     if (bytes === 0) return "0 Bytes";
     const k = 1024;
@@ -142,192 +141,27 @@ export default function ImageCompressorClient() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="bg-transparent p-8">
-        <div className="space-y-6">
-          {/* File Upload */}
-          <div className="mt-16 sm:mt-20 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-16 sm:p-20 text-center min-h-[220px]">
-            <div className="flex justify-center">
-              <div className="w-full max-w-xs">
-                <FileUpload
-                  placeholder="Choose Files"
-                  icon=""
-                  boxed={false}
-                  showHelp={false}
-                  showFileInfo={false}  // Add this line
-                  maxFileSize={MAX_FILE_SIZE}
-                  allowedMimeTypes={ALLOWED_MIME_TYPES}
-                  allowedExtensions={ALLOWED_EXTENSIONS}
-                  onFileChange={handleFileChange}
-                  onError={setError}
-                  className="space-y-2"
-                />
-              </div>
-            </div>
-            <p className="mt-3 text-sm text-gray-600">Max file size 1GB. <a href="#" className="underline">Sign Up</a> for more</p>
-            <p className="mt-1 text-xs text-gray-500">By proceeding, you agree to our <a href="#" className="underline">Terms of Use</a>.</p>
-          </div>
-
-          {/* Upload Progress */}
-          {isUploading && (
-            <div className="mt-4 bg-white border border-gray-200 rounded-xl p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-800">Uploading {uploadingFileName}…</span>
-                </div>
-                <span className="text-sm text-gray-500">{Math.round(uploadProgress)}%</span>
-              </div>
-              <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-gray-700 h-2 rounded-full transition-all" style={{ width: `${uploadProgress}%` }} />
-              </div>
-            </div>
-          )}
-
-          {/* Selected File Summary - Add this section */}
-          {file && !isUploading && (
-            <div className="mt-4 bg-white border border-gray-200 rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-sm font-medium text-gray-900">{file.name}</div>
-                  <div className="text-xs text-gray-600">{formatBytes(file.size)}</div>
-                </div>
-                <button onClick={resetState} className="text-sm text-gray-600 hover:text-red-600 transition-colors">Remove</button>
-              </div>
-            </div>
-          )}
-
-          {/* Debug Section - Remove this after fixing */}
-          <div className="mt-4 p-4 bg-yellow-100 border border-yellow-300 rounded-xl">
-            <h3 className="text-sm font-semibold text-yellow-800 mb-2">Debug Info:</h3>
-            <p className="text-xs text-yellow-700">File selected: {file ? file.name : 'No file'}</p>
-            <p className="text-xs text-yellow-700">File size: {file ? `${(file.size / 1024 / 1024).toFixed(2)} MB` : 'N/A'}</p>
-            <p className="text-xs text-yellow-700">File type: {file ? file.type : 'N/A'}</p>
-            <p className="text-xs text-yellow-700">Should show compression settings: {file ? 'YES' : 'NO'}</p>
-          </div>
-
-          {/* Compression Settings */}
-          {file && (
-            <div className="bg-gray-200/50 border border-gray-300/50 rounded-xl p-6 backdrop-blur-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 text-center">Compression Settings</h3>
-              
-              <div className="space-y-4">
-                {/* Output Format */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Output Format
-                  </label>
-                  <select
-                    value={format}
-                    onChange={(e) => setFormat(e.target.value as OutputFormat)}
-                    className="w-full px-4 py-3 border border-gray-300/50 rounded-xl text-gray-900 bg-gray-300/50 focus:outline-none focus:ring-2 focus:ring-gray-500/50 focus:border-gray-500/50 transition-all duration-200"
-                  >
-                    <option value="image/jpeg">JPG (best compression)</option>
-                    <option value="image/webp">WEBP (modern, efficient)</option>
-                    <option value="image/png">PNG (lossless quality)</option>
-                  </select>
-                </div>
-
-                {/* Quality Slider */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Quality: {Math.round(quality * 100)}%
-                  </label>
-                  <input
-                    type="range"
-                    min={0.1}
-                    max={1}
-                    step={0.05}
-                    value={quality}
-                    onChange={(e) => setQuality(parseFloat(e.target.value))}
-                    className="w-full h-2 bg-gray-300/50 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>Low (10%)</span>
-                    <span>High (100%)</span>
-                  </div>
-                </div>
-
-                {/* Dimensions */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Max Width (px)
-                    </label>
-                    <input
-                      type="number"
-                      min={0}
-                      placeholder="1920"
-                      value={maxWidth}
-                      onChange={(e) => setMaxWidth(parseInt(e.target.value || "0"))}
-                      className="w-full px-4 py-3 border border-gray-300/50 rounded-xl text-gray-900 bg-gray-300/50 focus:outline-none focus:ring-2 focus:ring-gray-500/50 focus:border-gray-500/50 transition-all duration-200"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Max Height (px)
-                    </label>
-                    <input
-                      type="number"
-                      min={0}
-                      placeholder="1080"
-                      value={maxHeight}
-                      onChange={(e) => setMaxHeight(parseInt(e.target.value || "0"))}
-                      className="w-full px-4 py-3 border border-gray-300/50 rounded-xl text-gray-900 bg-gray-300/50 focus:outline-none focus:ring-2 focus:ring-gray-500/50 focus:border-gray-500/50 transition-all duration-200"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {error && (
-            <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl" role="alert">
-              <p className="text-red-700 text-sm">{error}</p>
-            </div>
-          )}
-
-          {/* Compress Button */}
-          {file && (
-            <button
-              onClick={handleCompress}
-              disabled={isProcessing}
-              className="mt-4 w-full py-4 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50"
-            >
-              <span className="flex items-center justify-center gap-3">
-                {isProcessing ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Compressing…
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-                    </svg>
-                    Compress Image
-                  </>
-                )}
-              </span>
-            </button>
-          )}
-
-          {/* Download Button */}
-          {compressedUrl && (
-            <button
-              onClick={handleDownload}
-              className="mt-4 w-full py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-colors"
-            >
-              <span className="flex items-center justify-center gap-3">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Download Compressed Image
-              </span>
-            </button>
-          )}
-        </div>
-      </div>
+      <FileUpload
+        placeholder="Choose Files"
+        icon=""
+        boxed={false}
+        showHelp={false}
+        showFileInfo={false}
+        maxFileSize={MAX_FILE_SIZE}
+        allowedMimeTypes={ALLOWED_MIME_TYPES}
+        allowedExtensions={ALLOWED_EXTENSIONS}
+        onFileChange={handleFileChange}
+        onError={setError}
+        actionButtonText="Compress Image"
+        onAction={handleCompress}
+        isLoading={isProcessing}
+        showResult={!!compressedUrl}
+        resultUrl={compressedUrl || undefined}
+        resultFileName={compressedFileName}
+        resultFileSize={compressedSize}
+        onDownload={handleDownload}
+        className="space-y-2"
+      />
     </div>
   );
 }
-
-

@@ -10,6 +10,8 @@ export default function VideoToMP3Client() {
   const [ready, setReady] = useState(false);
   const [video, setVideo] = useState<File | null>(null);
   const [mp3, setMp3] = useState<string | null>(null);
+  const [convertedFileName, setConvertedFileName] = useState<string>("");
+  const [convertedFileSize, setConvertedFileSize] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -27,6 +29,8 @@ export default function VideoToMP3Client() {
   const resetState = () => {
     setVideo(null);
     setMp3(null);
+    setConvertedFileName("");
+    setConvertedFileSize(0);
     setError(null);
     setIsUploading(false);
     setUploadProgress(0);
@@ -43,6 +47,9 @@ export default function VideoToMP3Client() {
     setUploadingFileName(selectedFile.name);
     setError(null);
     setMp3(null);
+
+    setConvertedFileName("");
+    setConvertedFileSize(0);
 
     let current = 0;
     const interval = setInterval(() => {
@@ -124,6 +131,8 @@ export default function VideoToMP3Client() {
       const url = URL.createObjectURL(blob);
 
       setMp3(url);
+      setConvertedFileName(video.name.replace(/\.[^/.]+$/, ".mp3"));
+      setConvertedFileSize(blob.size);
 
       // Cleanup temporary files
       try {
@@ -160,19 +169,29 @@ export default function VideoToMP3Client() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="bg-transparent p-8">
-        <div className="space-y-6">
-          {/* Upload Area */}
-          <FileUpload
-            placeholder="Choose Files"
-            icon="🎬"
-            maxFileSize={MAX_FILE_SIZE}
-            allowedMimeTypes={ALLOWED_MIME_TYPES}
-            allowedExtensions={ALLOWED_EXTENSIONS}
-            onFileChange={handleFileChange}
-            onError={setError}
-          />
+    <div className="max-w-3xl mx-auto">
+      <FileUpload
+        placeholder="Choose Files"
+        icon=""
+        boxed={false}
+        showHelp={false}
+        maxFileSize={MAX_FILE_SIZE}
+        allowedMimeTypes={ALLOWED_MIME_TYPES}
+        allowedExtensions={ALLOWED_EXTENSIONS}
+        onFileChange={handleFileChange}
+        onError={setError}
+        actionButtonText="Convert to MP3"
+        onAction={handleConvert}
+        isLoading={isLoading}
+        showResult={!!mp3}
+        resultUrl={mp3 || undefined}
+        resultFileName={convertedFileName}
+        resultFileSize={convertedFileSize}
+        onDownload={handleDownload}
+        className="space-y-2"
+      />
+    </div>
+  );
 
           {isUploading && (
             <div className="bg-gray-200/50 border border-gray-300/50 rounded-xl p-6 backdrop-blur-sm">

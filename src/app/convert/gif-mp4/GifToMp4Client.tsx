@@ -9,6 +9,7 @@ export default function GifToMp4Client() {
   const [gif, setGif] = useState<File | null>(null);
   const [mp4Url, setMp4Url] = useState<string | null>(null);
   const [convertedFileName, setConvertedFileName] = useState<string>("");
+  const [convertedFileSize, setConvertedFileSize] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState("Loading FFmpeg...");
@@ -25,6 +26,7 @@ export default function GifToMp4Client() {
     setGif(null);
     setMp4Url(null);
     setConvertedFileName('');
+    setConvertedFileSize(0);
     setError(null);
     setIsUploading(false);
     setUploadProgress(0);
@@ -42,6 +44,7 @@ export default function GifToMp4Client() {
     setError(null);
     setMp4Url(null);
     setConvertedFileName('');
+    setConvertedFileSize(0);
 
     let current = 0;
     const interval = setInterval(() => {
@@ -103,6 +106,7 @@ export default function GifToMp4Client() {
         const blob = await res.blob();
         setMp4Url(URL.createObjectURL(blob));
         setConvertedFileName(gif.name.replace(/\.[^/.]+$/, ".mp4"));
+        setConvertedFileSize(blob.size);
         setIsLoading(false);
         setProgress(0);
         return;
@@ -168,115 +172,27 @@ export default function GifToMp4Client() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      {/* Single outer dropzone to match other tools */}
-      <div className="mt-16 sm:mt-20 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-16 sm:p-20 text-center min-h-[220px]">
-        <div className="flex justify-center">
-          <div className="w-full max-w-xs">
-            <FileUpload
-              placeholder="Choose Files"
-              icon=""
-              boxed={false}
-              showHelp={false}
-              maxFileSize={MAX_FILE_SIZE}
-              allowedMimeTypes={ALLOWED_MIME_TYPES}
-              allowedExtensions={ALLOWED_EXTENSIONS}
-              onFileChange={handleFileChange}
-              onError={setError}
-              className="space-y-2"
-            />
-          </div>
-        </div>
-        <p className="mt-3 text-sm text-gray-600">Max file size 1GB. <a href="#" className="underline">Sign Up</a> for more</p>
-        <p className="mt-1 text-xs text-gray-500">By proceeding, you agree to our <a href="#" className="underline">Terms of Use</a>.</p>
-      </div>
-
-          {/* Upload Progress */}
-          {isUploading && (
-            <div className="mt-4 bg-white border border-gray-200 rounded-xl p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                  <span className="text-sm text-gray-800">Uploading {uploadingFileName}…</span>
-                </div>
-                <span className="text-sm text-gray-500">{Math.round(uploadProgress)}%</span>
-              </div>
-              <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
-                  style={{ width: `${uploadProgress}%` }}
-                />
-              </div>
-            </div>
-          )}
-
-          {error && (
-            <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl" role="alert">
-              <span className="block sm:inline">{error}</span>
-            </div>
-          )}
-
-          {/* Progress Bar */}
-          {isLoading && (
-            <div className="mt-4 bg-white border border-gray-200 rounded-xl p-4">
-              <h4 className="font-semibold text-gray-900 mb-3">Converting GIF</h4>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-700">Processing...</span>
-                  <span className="text-sm font-medium text-gray-900">{progress}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-gray-700 h-2 rounded-full transition-all" 
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-                <p className="text-xs text-gray-600">
-                  Converting GIF to MP4 video with optimized settings...
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Convert Button - Only show after file upload and before conversion */}
-          {gif && !mp4Url && (
-            <button
-              onClick={handleConvert}
-              disabled={isLoading}
-              className="mt-4 w-full py-4 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50"
-            >
-              <span className="flex items-center justify-center gap-3">
-                {isLoading ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Converting to MP4...
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-                    </svg>
-                    Convert to MP4
-                  </>
-                )}
-              </span>
-            </button>
-          )}
-
-          {/* Download Button - Only show after conversion */}
-          {mp4Url && (
-            <button
-              onClick={handleDownload}
-              className="mt-4 w-full py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-colors"
-            >
-              <span className="flex items-center justify-center gap-3">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Download MP4 File
-              </span>
-            </button>
-          )}
-        </div>
+      <FileUpload
+        placeholder="Choose Files"
+        icon=""
+        boxed={false}
+        showHelp={false}
+        maxFileSize={MAX_FILE_SIZE}
+        allowedMimeTypes={ALLOWED_MIME_TYPES}
+        allowedExtensions={ALLOWED_EXTENSIONS}
+        onFileChange={handleFileChange}
+        onError={setError}
+        actionButtonText="Convert to MP4"
+        onAction={handleConvert}
+        isLoading={isLoading}
+        showResult={!!mp4Url}
+        resultUrl={mp4Url || undefined}
+        resultFileName={convertedFileName}
+        resultFileSize={convertedFileSize}
+        onDownload={handleDownload}
+        className="space-y-2"
+      />
+    </div>
   );
 }
 

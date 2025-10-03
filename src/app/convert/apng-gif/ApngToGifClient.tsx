@@ -9,6 +9,7 @@ export default function ApngToGifClient() {
   const [image, setImage] = useState<File | null>(null);
   const [gif, setGif] = useState<string | null>(null);
   const [convertedFileName, setConvertedFileName] = useState<string>("");
+  const [convertedFileSize, setConvertedFileSize] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState("Loading FFmpeg...");
@@ -25,6 +26,7 @@ export default function ApngToGifClient() {
     setImage(null);
     setGif(null);
     setConvertedFileName('');
+    setConvertedFileSize(0);
     setError(null);
     setIsUploading(false);
     setUploadProgress(0);
@@ -42,6 +44,7 @@ export default function ApngToGifClient() {
     setError(null);
     setGif(null);
     setConvertedFileName('');
+    setConvertedFileSize(0);
 
     let current = 0;
     const interval = setInterval(() => {
@@ -96,6 +99,7 @@ export default function ApngToGifClient() {
       if (res.ok) {
         const blob = await res.blob();
         setGif(URL.createObjectURL(blob));
+        setConvertedFileSize(blob.size);
         setConvertedFileName(image.name.replace(/\.[^/.]+$/, ".gif"));
         setIsLoading(false);
         setProgress(0);
@@ -124,6 +128,7 @@ export default function ApngToGifClient() {
       const data = await ffmpeg.readFile(output);
       const blob = new Blob([data as BlobPart], { type: 'image/gif' });
       setGif(URL.createObjectURL(blob));
+      setConvertedFileSize(blob.size);
       setConvertedFileName(image.name.replace(/\.[^/.]+$/, ".gif"));
     } catch (e) {
       console.error('Conversion failed', e);

@@ -16,6 +16,8 @@ interface ConversionSettings {
 export default function MP3ToOggClient() {
   const [file, setFile] = useState<File | null>(null);
   const [convertedFile, setConvertedFile] = useState<Blob | null>(null);
+  const [convertedFileName, setConvertedFileName] = useState<string>("");
+  const [convertedFileSize, setConvertedFileSize] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -43,6 +45,8 @@ export default function MP3ToOggClient() {
   const resetState = () => {
     setFile(null);
     setConvertedFile(null);
+    setConvertedFileName("");
+    setConvertedFileSize(0);
     setError(null);
     setIsUploading(false);
     setUploadProgress(0);
@@ -59,6 +63,8 @@ export default function MP3ToOggClient() {
     setUploadingFileName(selectedFile.name);
     setError(null);
     setConvertedFile(null);
+    setConvertedFileName("");
+    setConvertedFileSize(0);
 
     let current = 0;
     const interval = setInterval(() => {
@@ -136,6 +142,8 @@ export default function MP3ToOggClient() {
         if (response.ok) {
           const blob = await response.blob();
           setConvertedFile(blob);
+          setConvertedFileName(file.name.replace(/\.[^/.]+$/, ".ogg"));
+          setConvertedFileSize(blob.size);
           setIsLoading(false);
           return;
         }
@@ -202,6 +210,8 @@ export default function MP3ToOggClient() {
       const blob = new Blob([data as BlobPart], { type: 'audio/ogg' });
       
       setConvertedFile(blob);
+      setConvertedFileName(file.name.replace(/\.[^/.]+$/, ".ogg"));
+      setConvertedFileSize(blob.size);
       
       // Cleanup
       await ffmpeg.deleteFile(inputName);
@@ -230,27 +240,28 @@ export default function MP3ToOggClient() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      {/* Single outer dropzone like Video → GIF */}
-      <div className="mt-16 sm:mt-20 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-16 sm:p-20 text-center min-h-[220px]">
-        <div className="flex justify-center">
-          <div className="w-full max-w-xs">
-            <FileUpload
-              placeholder="Choose Files"
-              icon=""
-              boxed={false}
-              showHelp={false}
-              maxFileSize={MAX_FILE_SIZE}
-              allowedMimeTypes={ALLOWED_MIME_TYPES}
-              allowedExtensions={ALLOWED_EXTENSIONS}
-              onFileChange={handleFileChange}
-              onError={setError}
-              className="space-y-2"
-            />
-          </div>
-        </div>
-        <p className="mt-3 text-sm text-gray-600">Max file size 1GB. <a href="#" className="underline">Sign Up</a> for more</p>
-        <p className="mt-1 text-xs text-gray-500">By proceeding, you agree to our <a href="#" className="underline">Terms of Use</a>.</p>
-      </div>
+      <FileUpload
+        placeholder="Choose Files"
+        icon=""
+        boxed={false}
+        showHelp={false}
+        maxFileSize={MAX_FILE_SIZE}
+        allowedMimeTypes={ALLOWED_MIME_TYPES}
+        allowedExtensions={ALLOWED_EXTENSIONS}
+        onFileChange={handleFileChange}
+        onError={setError}
+        actionButtonText="Convert to OGG"
+        onAction={handleConvert}
+        isLoading={isLoading}
+        showResult={!!convertedFile}
+        resultUrl={convertedFile ? URL.createObjectURL(convertedFile) : undefined}
+        resultFileName={convertedFileName}
+        resultFileSize={convertedFileSize}
+        onDownload={handleDownload}
+        className="space-y-2"
+      />
+    </div>
+  );
 
       {/* Upload progress pill */}
       {isUploading && (

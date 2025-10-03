@@ -8,6 +8,7 @@ export default function HeicToPngClient() {
   const [preview, setPreview] = useState<string | null>(null);
   const [convertedImage, setConvertedImage] = useState<string | null>(null);
   const [convertedFileName, setConvertedFileName] = useState<string>("");
+  const [convertedFileSize, setConvertedFileSize] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -24,6 +25,7 @@ export default function HeicToPngClient() {
     setPreview(null);
     setConvertedImage(null);
     setConvertedFileName('');
+    setConvertedFileSize(0);
     setError(null);
     setIsUploading(false);
     setUploadProgress(0);
@@ -44,6 +46,7 @@ export default function HeicToPngClient() {
     setError(null);
     setConvertedImage(null);
     setConvertedFileName('');
+    setConvertedFileSize(0);
     setPreview(null);
 
     let current = 0;
@@ -92,6 +95,11 @@ export default function HeicToPngClient() {
       const data = await res.json();
       setConvertedImage(`data:image/png;base64,${data.base64}`);
       setConvertedFileName(file.name.replace(/\.heic$/i, '.png') || 'converted.png');
+      
+      // Calculate file size from base64
+      const base64Size = (data.base64.length * 3) / 4;
+      setConvertedFileSize(Math.round(base64Size));
+      
       setConvertProgress(100);
     } catch (error) {
       console.error('Conversion failed:', error);
@@ -119,19 +127,29 @@ export default function HeicToPngClient() {
 
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="bg-transparent p-8">
-        <div className="space-y-6">
-          {/* Upload Area */}
-          <FileUpload
-            placeholder="Choose Files"
-            icon="📱"
-            maxFileSize={MAX_FILE_SIZE}
-            allowedMimeTypes={ALLOWED_MIME_TYPES}
-            allowedExtensions={ALLOWED_EXTENSIONS}
-            onFileChange={handleFileChange}
-            onError={setError}
-          />
+    <div className="max-w-3xl mx-auto">
+      <FileUpload
+        placeholder="Choose Files"
+        icon=""
+        boxed={false}
+        showHelp={false}
+        maxFileSize={MAX_FILE_SIZE}
+        allowedMimeTypes={ALLOWED_MIME_TYPES}
+        allowedExtensions={ALLOWED_EXTENSIONS}
+        onFileChange={handleFileChange}
+        onError={setError}
+        actionButtonText="Convert to PNG"
+        onAction={handleConvert}
+        isLoading={isLoading}
+        showResult={!!convertedImage}
+        resultUrl={convertedImage || undefined}
+        resultFileName={convertedFileName}
+        resultFileSize={convertedFileSize}
+        onDownload={handleDownload}
+        className="space-y-2"
+      />
+    </div>
+  );
 
           {/* Upload Progress */}
           {isUploading && (
@@ -213,8 +231,5 @@ export default function HeicToPngClient() {
               </span>
             </button>
           )}
-        </div>
-      </div>
-    </div>
-  );
+
 }

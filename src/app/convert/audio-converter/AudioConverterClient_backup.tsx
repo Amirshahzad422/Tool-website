@@ -175,7 +175,7 @@ export default function AviToGifClient() {
             />
           </div>
         </div>
-        <p className="mt-3 text-sm text-gray-600">Max file size 1GB. <a href="#" className="underline">Sign Up</a> for more</p>
+        <p className="mt-3 text-sm text-gray-600">Max file size 500Mb. <a href="#" className="underline">Login</a> for more</p>
         <p className="mt-1 text-xs text-gray-500">By proceeding, you agree to our <a href="#" className="underline">Terms of Use</a>.</p>
       </div>
 

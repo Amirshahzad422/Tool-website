@@ -10,6 +10,7 @@ export default function AudioConverterClient() {
   const [file, setFile] = useState<File | null>(null);
   const [convertedAudioUrl, setConvertedAudioUrl] = useState<string | null>(null);
   const [convertedFileName, setConvertedFileName] = useState<string>('');
+  const [convertedFileSize, setConvertedFileSize] = useState<number>(0);
   const [target, setTarget] = useState<AudioFormat>('mp3');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,6 +31,7 @@ export default function AudioConverterClient() {
     setFile(null);
     setConvertedAudioUrl(null);
     setConvertedFileName('');
+    setConvertedFileSize(0);
     setError(null);
     setIsUploading(false);
     setUploadProgress(0);
@@ -48,6 +50,7 @@ export default function AudioConverterClient() {
     setError(null);
     setConvertedAudioUrl(null);
     setConvertedFileName('');
+    setConvertedFileSize(0);
 
     let current = 0;
     const interval = setInterval(() => {
@@ -111,6 +114,7 @@ export default function AudioConverterClient() {
 
       const url = URL.createObjectURL(blob);
       setConvertedAudioUrl(url);
+      setConvertedFileSize(blob.size);
       setConvertedFileName(result.fileName);
       setConvertProgress(100);
     } catch (err: any) {
@@ -150,65 +154,26 @@ export default function AudioConverterClient() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      {/* Single outer dropzone like Video → GIF */}
-      <div className="mt-16 sm:mt-20 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-16 sm:p-20 text-center min-h-[220px]">
-        <div className="flex justify-center">
-          <div className="w-full max-w-xs">
-            <FileUpload
-              placeholder="Choose Files"
-              icon=""
-              boxed={false}
-              showHelp={false}
-              maxFileSize={MAX_FILE_SIZE}
-              allowedMimeTypes={ALLOWED_MIME_TYPES}
-              allowedExtensions={ALLOWED_EXTENSIONS}
-              onFileChange={handleFileChange}
-              onError={setError}
-              className="space-y-2"
-            />
-          </div>
-        </div>
-        <p className="mt-3 text-sm text-gray-600">Max file size 1GB. <a href="#" className="underline">Sign Up</a> for more</p>
-        <p className="mt-1 text-xs text-gray-500">By proceeding, you agree to our <a href="#" className="underline">Terms of Use</a>.</p>
-      </div>
-
-      {/* Upload progress pill */}
-      {isUploading && (
-        <div className="mt-4 bg-white border border-gray-200 rounded-xl p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-800">Uploading {uploadingFileName}…</span>
-            <span className="text-sm text-gray-600">{Math.round(uploadProgress)}%</span>
-          </div>
-          <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-            <div className="bg-gray-700 h-2 rounded-full transition-all" style={{ width: `${uploadProgress}%` }} />
-          </div>
-        </div>
-      )}
-
-      {error && (
-        <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl" role="alert">
-          <span className="block sm:inline">{error}</span>
-        </div>
-      )}
-
-      {file && !convertedAudioUrl && (
-        <button
-          onClick={handleConvert}
-          disabled={isLoading}
-          className="mt-4 w-full py-4 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50"
-        >
-          {isLoading ? `Converting… ${Math.round(convertProgress)}%` : `Convert to ${target.toUpperCase()}`}
-        </button>
-      )}
-
-      {convertedAudioUrl && (
-        <button
-          onClick={handleDownload}
-          className="mt-4 w-full py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-colors"
-        >
-          Download {target.toUpperCase()} File
-        </button>
-      )}
+      <FileUpload
+        placeholder="Choose Files"
+        icon=""
+        boxed={false}
+        showHelp={false}
+        maxFileSize={MAX_FILE_SIZE}
+        allowedMimeTypes={ALLOWED_MIME_TYPES}
+        allowedExtensions={ALLOWED_EXTENSIONS}
+        onFileChange={handleFileChange}
+        onError={setError}
+        actionButtonText={`Convert to ${target.toUpperCase()}`}
+        onAction={handleConvert}
+        isLoading={isLoading}
+        showResult={!!convertedAudioUrl}
+        resultUrl={convertedAudioUrl || undefined}
+        resultFileName={convertedFileName}
+        resultFileSize={convertedFileSize}
+        onDownload={handleDownload}
+        className="space-y-2"
+      />
     </div>
   );
 }

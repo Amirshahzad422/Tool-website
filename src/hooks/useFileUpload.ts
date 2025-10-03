@@ -29,7 +29,6 @@ export const useFileUpload = (options: FileUploadOptions = {}) => {
   const [error, setError] = useState<string | null>(null);
 
   const validateFile = useCallback((file: File): boolean => {
-    console.log('[useFileUpload] validateFile:', { name: file.name, size: file.size, type: file.type });
     // Check file size
     if (file.size > maxFileSize) {
       const errorMsg = `File size exceeds the limit of ${(maxFileSize / (1024 * 1024)).toFixed(0)}MB.`;
@@ -62,9 +61,7 @@ export const useFileUpload = (options: FileUploadOptions = {}) => {
   }, [maxFileSize, allowedMimeTypes, allowedExtensions, onError]);
 
   const handleFileSelect = useCallback((file: File) => {
-    console.log('[useFileUpload] handleFileSelect received:', file?.name);
     if (validateFile(file)) {
-      console.log('[useFileUpload] file validated, calling onFileSelect');
       onFileSelect?.(file);
     }
   }, [validateFile, onFileSelect]);
@@ -171,24 +168,24 @@ export const useFileUpload = (options: FileUploadOptions = {}) => {
       icon: '💻',
       action: handleDeviceUpload
     },
-    {
-      id: 'dropbox',
-      label: 'From Dropbox',
-      icon: '📦',
-      action: handleDropboxUpload
-    },
+    // {
+    //   id: 'dropbox',
+    //   label: 'From Dropbox',
+    //   icon: '📦',
+    //   action: handleDropboxUpload
+    // },
     {
       id: 'google-drive',
       label: 'From Google Drive',
       icon: '☁️',
       action: handleGoogleDriveUpload
     },
-    {
-      id: 'onedrive',
-      label: 'From OneDrive',
-      icon: '📁',
-      action: handleOneDriveUpload
-    },
+    // {
+    //   id: 'onedrive',
+    //   label: 'From OneDrive',
+    //   icon: '📁',
+    //   action: handleOneDriveUpload
+    // },
     {
       id: 'url',
       label: 'From Url',
@@ -198,14 +195,9 @@ export const useFileUpload = (options: FileUploadOptions = {}) => {
   ];
 
   const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('[useFileUpload] File input change event triggered!');
     const file = e.target.files?.[0];
-    console.log('[useFileUpload] input change, file:', file?.name);
-    console.log('[useFileUpload] files array:', e.target.files);
     if (file) {
       handleFileSelect(file);
-    } else {
-      console.log('[useFileUpload] No file selected');
     }
   }, [handleFileSelect]);
 

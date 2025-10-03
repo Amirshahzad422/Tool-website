@@ -7,6 +7,7 @@ export default function PdfToImagesClient() {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [images, setImages] = useState<Array<{ name: string; url: string }>>([]);
+  const [convertedFileSize, setConvertedFileSize] = useState<number>(0);
   const [pdfjsLoaded, setPdfjsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -21,6 +22,7 @@ export default function PdfToImagesClient() {
   const resetState = () => {
     setFile(null);
     setImages([]);
+    setConvertedFileSize(0);
     setError(null);
     setIsUploading(false);
     setUploadProgress(0);
@@ -39,6 +41,7 @@ export default function PdfToImagesClient() {
     setUploadingFileName(selectedFile.name);
     setError(null);
     setImages([]);
+    setConvertedFileSize(0);
 
     let current = 0;
     const interval = setInterval(() => {
@@ -136,6 +139,17 @@ export default function PdfToImagesClient() {
       }
 
       setImages(imgs);
+      
+      // Calculate total file size from all images
+      let totalSize = 0;
+      for (const img of imgs) {
+        // Convert data URL to blob to get size
+        const response = await fetch(img.url);
+        const blob = await response.blob();
+        totalSize += blob.size;
+      }
+      setConvertedFileSize(totalSize);
+      
       setConvertProgress(100);
     } catch (e) {
       console.warn("Server conversion failed, trying client-side fallback with PDF.js");
@@ -163,6 +177,17 @@ export default function PdfToImagesClient() {
           out.push({ name: `page-${i}.png`, url });
         }
         setImages(out);
+        
+        // Calculate total file size from all images
+        let totalSize = 0;
+        for (const img of out) {
+          // Convert data URL to blob to get size
+          const response = await fetch(img.url);
+          const blob = await response.blob();
+          totalSize += blob.size;
+        }
+        setConvertedFileSize(totalSize);
+        
         setConvertProgress(100);
       } catch (clientErr) {
         console.error(clientErr);
@@ -183,29 +208,38 @@ export default function PdfToImagesClient() {
     a.remove();
   }
 
+
+  function handleDownload() {
+    if (images.length > 0) {
+      images.forEach((img, index) => {
+        setTimeout(() => handleDownloadImage(img.url, img.name), index * 300);
+      });
+    }
+  }
   return (
     <div className="max-w-3xl mx-auto">
-      {/* Single outer dropzone like Video → GIF */}
-      <div className="mt-16 sm:mt-20 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-16 sm:p-20 text-center min-h-[220px]">
-        <div className="flex justify-center">
-          <div className="w-full max-w-xs">
-            <FileUpload
-              placeholder="Choose Files"
-              icon=""
-              boxed={false}
-              showHelp={false}
-              maxFileSize={MAX_FILE_SIZE}
-              allowedMimeTypes={ALLOWED_MIME_TYPES}
-              allowedExtensions={ALLOWED_EXTENSIONS}
-              onFileChange={handleFileChange}
-              onError={setError}
-              className="space-y-2"
-            />
-          </div>
-        </div>
-        <p className="mt-3 text-sm text-gray-600">Max file size 1GB. <a href="#" className="underline">Sign Up</a> for more</p>
-        <p className="mt-1 text-xs text-gray-500">By proceeding, you agree to our <a href="#" className="underline">Terms of Use</a>.</p>
-      </div>
+      <FileUpload
+        placeholder="Choose Files"
+        icon=""
+        boxed={false}
+        showHelp={false}
+        maxFileSize={MAX_FILE_SIZE}
+        allowedMimeTypes={ALLOWED_MIME_TYPES}
+        allowedExtensions={ALLOWED_EXTENSIONS}
+        onFileChange={handleFileChange}
+        onError={setError}
+        actionButtonText="Convert to Images"
+        onAction={handleConvert}
+        isLoading={isLoading}
+        showResult={images.length > 0}
+        resultUrl={images.length > 0 ? images[0].url : undefined}
+        resultFileName={images.length > 0 ? `${images.length} images` : ""}
+        resultFileSize={convertedFileSize}
+        onDownload={handleDownload}
+        className="space-y-2"
+      />
+    </div>
+  );
 
       {/* Upload progress pill */}
       {isUploading && (
@@ -284,6 +318,6 @@ export default function PdfToImagesClient() {
           Download All Images ({images.length})
         </button>
       )}
-    </div>
-  );
+    // </div>
+  // );
 }

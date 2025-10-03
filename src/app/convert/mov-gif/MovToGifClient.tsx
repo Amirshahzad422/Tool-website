@@ -9,6 +9,7 @@ export default function MovToGifClient() {
   const [video, setVideo] = useState<File | null>(null);
   const [gif, setGif] = useState<string | null>(null);
   const [convertedFileName, setConvertedFileName] = useState<string>("");
+  const [convertedFileSize, setConvertedFileSize] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState("Loading FFmpeg...");
@@ -25,6 +26,7 @@ export default function MovToGifClient() {
     setVideo(null);
     setGif(null);
     setConvertedFileName('');
+    setConvertedFileSize(0);
     setError(null);
     setIsUploading(false);
     setUploadProgress(0);
@@ -42,6 +44,7 @@ export default function MovToGifClient() {
     setError(null);
     setGif(null);
     setConvertedFileName('');
+    setConvertedFileSize(0);
 
     let current = 0;
     const interval = setInterval(() => {
@@ -96,6 +99,7 @@ export default function MovToGifClient() {
       if (res.ok) {
         const blob = await res.blob();
         setGif(URL.createObjectURL(blob));
+        setConvertedFileSize(blob.size);
         setConvertedFileName(video.name.replace(/\.[^/.]+$/, ".gif"));
         setIsLoading(false);
         setProgress(0);
@@ -124,6 +128,7 @@ export default function MovToGifClient() {
       const data = await ffmpeg.readFile(output);
       const blob = new Blob([data as BlobPart], { type: 'image/gif' });
       setGif(URL.createObjectURL(blob));
+      setConvertedFileSize(blob.size);
       setConvertedFileName(video.name.replace(/\.[^/.]+$/, ".gif"));
     } catch (e) {
       console.error('Conversion failed', e);
@@ -158,26 +163,28 @@ export default function MovToGifClient() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="mt-16 sm:mt-20 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 p-16 sm:p-20 text-center min-h-[220px]">
-        <div className="flex justify-center">
-          <div className="w-full max-w-xs">
-            <FileUpload
-              placeholder="Choose Files"
-              icon=""
-              boxed={false}
-              showHelp={false}
-              maxFileSize={MAX_FILE_SIZE}
-              allowedMimeTypes={ALLOWED_MIME_TYPES}
-              allowedExtensions={ALLOWED_EXTENSIONS}
-              onFileChange={handleFileChange}
-              onError={setError}
-              className="space-y-2"
-            />
-          </div>
-        </div>
-        <p className="mt-3 text-sm text-gray-600">Max file size 1GB. <a href="#" className="underline">Sign Up</a> for more</p>
-        <p className="mt-1 text-xs text-gray-500">By proceeding, you agree to our <a href="#" className="underline">Terms of Use</a>.</p>
-      </div>
+      <FileUpload
+        placeholder="Choose Files"
+        icon=""
+        boxed={false}
+        showHelp={false}
+        maxFileSize={MAX_FILE_SIZE}
+        allowedMimeTypes={ALLOWED_MIME_TYPES}
+        allowedExtensions={ALLOWED_EXTENSIONS}
+        onFileChange={handleFileChange}
+        onError={setError}
+        actionButtonText="Convert to GIF"
+        onAction={handleConvert}
+        isLoading={isLoading}
+        showResult={!!gif}
+        resultUrl={gif || undefined}
+        resultFileName={convertedFileName}
+        resultFileSize={convertedFileSize}
+        onDownload={handleDownload}
+        className="space-y-2"
+      />
+    </div>
+  );
 
       {isUploading && (
         <div className="mt-4 bg-white border border-gray-200 rounded-xl p-4">
