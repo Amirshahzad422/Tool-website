@@ -88,8 +88,8 @@ export default function VideoCompressorClient() {
       <FileUpload
         placeholder="Choose Files"
         icon=""
-        boxed={false}
-        showHelp={false}
+        boxed={true}
+        showHelp={true}
         showFileInfo={false}
         maxFileSize={MAX_FILE_SIZE}
         allowedMimeTypes={ALLOWED_MIME_TYPES}

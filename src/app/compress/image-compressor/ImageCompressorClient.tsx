@@ -144,8 +144,8 @@ export default function ImageCompressorClient() {
       <FileUpload
         placeholder="Choose Files"
         icon=""
-        boxed={false}
-        showHelp={false}
+        boxed={true}
+        showHelp={true}
         showFileInfo={false}
         maxFileSize={MAX_FILE_SIZE}
         allowedMimeTypes={ALLOWED_MIME_TYPES}

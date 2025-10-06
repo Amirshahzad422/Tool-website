@@ -164,7 +164,7 @@ export default function AviToGifClient() {
             <FileUpload
               placeholder="Choose Files"
               icon=""
-              boxed={false}
+              boxed={true}
               showHelp={false}
               maxFileSize={MAX_FILE_SIZE}
               allowedMimeTypes={ALLOWED_MIME_TYPES}

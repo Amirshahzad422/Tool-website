@@ -1,76 +1,153 @@
 import Link from 'next/link';
-import { Metadata } from 'next';
+import { FaTools } from "react-icons/fa";
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-import ImageConverterHero from "./ImageConverterHero";
-
-export const metadata: Metadata = {
-  title: 'Free Online Tools - Convert & Compress Files',
-  description: 'Free online tools for converting and compressing files. Support for images, videos, audio, PDFs, and more. No signup required.',
-  keywords: 'online tools, file converter, file compressor, video converter, image converter, audio converter, pdf tools',
-  openGraph: {
-    title: 'Free Online Tools - Convert & Compress Files',
-    description: 'Free online tools for converting and compressing files. Support for images, videos, audio, PDFs, and more.',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Free Online Tools - Convert & Compress Files',
-    description: 'Free online tools for converting and compressing files. Support for images, videos, audio, PDFs, and more.',
-  },
-};
-
-export default function HomePage() {
+export default function ToolsPage() {
   return (
-    <>
-      {/* Futuristic Hero */}
-      <section className="relative overflow-hidden pt-16 pb-14 sm:pt-20 sm:pb-20">
-        <div className="absolute inset-0">
-          <div className="absolute -top-32 -left-20 h-80 w-80 rounded-full bg-gradient-to-br from-gray-400/40 to-gray-600/30 blur-3xl" />
-          <div className="absolute -bottom-32 -right-24 h-[28rem] w-[28rem] rounded-full bg-gradient-to-tr from-gray-500/30 to-gray-700/30 blur-[90px]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.35),transparent_40%),radial-gradient(circle_at_80%_0%,rgba(255,255,255,0.25),transparent_35%)]" />
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <FaTools className="w-12 h-12 text-[#080c2a]" />
+            <h1 className="text-4xl font-bold text-gray-900">Toolbox</h1>
+          </div>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Comprehensive collection of conversion and compression tools for multimedia files
+          </p>
         </div>
 
-        <div className="relative w-full px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 sm:mb-16">
-            <div className="inline-flex items-center px-5 py-2.5 rounded-full bg-white/50 border border-gray-300/60 text-gray-900 text-sm font-medium mb-5 backdrop-blur-md shadow-sm">
-              <div className="w-2 h-2 bg-gray-800 rounded-full mr-3 animate-pulse" />
-              AI-Ready Conversion & Compression
-            </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-              Convert. Compress. Create.
-            </h1>
-            <p className="mt-5 text-base sm:text-lg text-gray-700 max-w-2xl mx-auto leading-relaxed">
-              A unified toolkit for images, video, audio, and documents. Fast, private, and entirely free.
-            </p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/convert" className="px-7 py-3 rounded-xl text-white bg-gray-900/90 hover:bg-gray-900 transition-all duration-300 shadow-lg hover:shadow-xl">
-                Explore Converters
-              </Link>
-              <Link href="/compress" className="px-7 py-3 rounded-xl border-2 border-gray-800/70 text-gray-900 hover:bg-gray-900/5 transition-all duration-300">
-                Explore Compressors
-              </Link>
-            </div>
+        {/* Convert Tools */}
+        <div className="mb-16">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Convert Tools</h2>
+            <p className="text-gray-600">Transform files from one format to another</p>
           </div>
 
-          {/* Glass Showcase - Centered Image Converter */}
-          <div className="max-w-3xl mx-auto">
-            <div className="rounded-2xl border border-gray-300/50 bg-white/50 backdrop-blur-lg p-5 sm:p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
-                  <span className="text-xl">🎨</span>
-                  Quick Image Convert
-                </h2>
-                <Link href="/convert/image-converter" className="text-sm font-medium text-gray-700 hover:text-gray-900">Open</Link>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Video & Audio */}
+            <div className="bg-white shadow-lg rounded-xl p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">🎵 Video & Audio</h3>
+              <div className="space-y-3">
+                <Link href="/convert/audio-converter" className="block text-gray-700 hover:text-[#080c2a] transition-colors">Audio Converter</Link>
+                <Link href="/convert/mp3-converter" className="block text-gray-700 hover:text-[#080c2a] transition-colors">MP3 Converter</Link>
+                <Link href="/convert/mp4-mp3" className="block text-gray-700 hover:text-[#080c2a] transition-colors">MP4 to MP3</Link>
+                <Link href="/convert/video-mp3" className="block text-gray-700 hover:text-[#080c2a] transition-colors">Video to MP3</Link>
+                <Link href="/convert/mp4-converter" className="block text-gray-700 hover:text-[#080c2a] transition-colors">MP4 Converter</Link>
+                <Link href="/convert/mov-mp4" className="block text-gray-700 hover:text-[#080c2a] transition-colors">MOV to MP4</Link>
+                <Link href="/convert/mp3-ogg" className="block text-gray-700 hover:text-[#080c2a] transition-colors">MP3 to OGG</Link>
               </div>
-              <div className="rounded-2xl border border-gray-300/50 bg-gray-100/60 p-3">
-                <ImageConverterHero />
+            </div>
+
+            {/* Image */}
+            <div className="bg-white shadow-lg rounded-xl p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">🖼️ Image</h3>
+              <div className="space-y-3">
+                <Link href="/convert/image-converter" className="block text-gray-700 hover:text-[#080c2a] transition-colors">Image Converter</Link>
+                <Link href="/convert/webp-png" className="block text-gray-700 hover:text-[#080c2a] transition-colors">WEBP to PNG</Link>
+                <Link href="/convert/jfif-png" className="block text-gray-700 hover:text-[#080c2a] transition-colors">JFIF to PNG</Link>
+                <Link href="/convert/heic-jpg" className="block text-gray-700 hover:text-[#080c2a] transition-colors">HEIC to JPG</Link>
+                <Link href="/convert/heic-png" className="block text-gray-700 hover:text-[#080c2a] transition-colors">HEIC to PNG</Link>
+                <Link href="/convert/webp-jpg" className="block text-gray-700 hover:text-[#080c2a] transition-colors">WEBP to JPG</Link>
+                <Link href="/convert/svg-converter" className="block text-gray-700 hover:text-[#080c2a] transition-colors">SVG to PNG</Link>
+              </div>
+            </div>
+
+            {/* PDF & Documents */}
+            <div className="bg-white shadow-lg rounded-xl p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">📄 PDF & Documents</h3>
+              <div className="space-y-3">
+                <Link href="/convert/pdf-to-images" className="block text-gray-700 hover:text-[#080c2a] transition-colors">PDF to Images</Link>
+                <Link href="/convert/image-to-pdf" className="block text-gray-700 hover:text-[#080c2a] transition-colors">Image to PDF</Link>
+                <Link href="/convert/heic-pdf" className="block text-gray-700 hover:text-[#080c2a] transition-colors">HEIC to PDF</Link>
+                <Link href="/convert/jpg-pdf" className="block text-gray-700 hover:text-[#080c2a] transition-colors">JPG to PDF</Link>
+              </div>
+            </div>
+
+            {/* GIF */}
+            <div className="bg-white shadow-lg rounded-xl p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">🎞️ GIF</h3>
+              <div className="space-y-3">
+                <Link href="/convert/video-gif" className="block text-gray-700 hover:text-[#080c2a] transition-colors">Video to GIF</Link>
+                <Link href="/convert/mp4-gif" className="block text-gray-700 hover:text-[#080c2a] transition-colors">MP4 to GIF</Link>
+                <Link href="/convert/webm-gif" className="block text-gray-700 hover:text-[#080c2a] transition-colors">WEBM to GIF</Link>
+                <Link href="/convert/apng-gif" className="block text-gray-700 hover:text-[#080c2a] transition-colors">APNG to GIF</Link>
+                <Link href="/convert/gif-mp4" className="block text-gray-700 hover:text-[#080c2a] transition-colors">GIF to MP4</Link>
+                <Link href="/convert/gif-apng" className="block text-gray-700 hover:text-[#080c2a] transition-colors">GIF to APNG</Link>
+                <Link href="/convert/image-gif" className="block text-gray-700 hover:text-[#080c2a] transition-colors">Image to GIF</Link>
+                <Link href="/convert/mov-gif" className="block text-gray-700 hover:text-[#080c2a] transition-colors">MOV to GIF</Link>
+                <Link href="/convert/avi-gif" className="block text-gray-700 hover:text-[#080c2a] transition-colors">AVI to GIF</Link>
+              </div>
+            </div>
+
+            {/* Utilities */}
+            <div className="bg-white shadow-lg rounded-xl p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">📏 Utilities</h3>
+              <div className="space-y-3">
+                <Link href="/convert/unit-converter" className="block text-gray-700 hover:text-[#080c2a] transition-colors">Unit Converter</Link>
+                <Link href="/convert/time-converter" className="block text-gray-700 hover:text-[#080c2a] transition-colors">Time Converter</Link>
+                <Link href="/convert/age-calculator" className="block text-gray-700 hover:text-[#080c2a] transition-colors">Age Calculator</Link>
+                <Link href="/convert/archive-converter" className="block text-gray-700 hover:text-[#080c2a] transition-colors">Archive Converter</Link>
               </div>
             </div>
           </div>
         </div>
-      </section>
-    </>
+
+        {/* Compress Tools */}
+        <div className="mb-16">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Compress Tools</h2>
+            <p className="text-gray-600">Reduce file sizes without losing quality</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Video & Audio */}
+            <div className="bg-white shadow-lg rounded-xl p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">🎵 Video & Audio</h3>
+              <div className="space-y-3">
+                <Link href="/compress/video-compressor" className="block text-gray-700 hover:text-[#080c2a] transition-colors">Video Compressor</Link>
+                <Link href="/compress/mp3-compressor" className="block text-gray-700 hover:text-[#080c2a] transition-colors">MP3 Compressor</Link>
+                <Link href="/compress/wav-compressor" className="block text-gray-700 hover:text-[#080c2a] transition-colors">WAV Compressor</Link>
+              </div>
+            </div>
+
+            {/* Image */}
+            <div className="bg-white shadow-lg rounded-xl p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">🖼️ Image</h3>
+              <div className="space-y-3">
+                <Link href="/compress/image-compressor" className="block text-gray-700 hover:text-[#080c2a] transition-colors">Image Compressor</Link>
+                <Link href="/compress/jpeg-compressor" className="block text-gray-700 hover:text-[#080c2a] transition-colors">JPEG Compressor</Link>
+                <Link href="/compress/png-compressor" className="block text-gray-700 hover:text-[#080c2a] transition-colors">PNG Compressor</Link>
+              </div>
+            </div>
+
+            {/* PDF */}
+            <div className="bg-white shadow-lg rounded-xl p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">📄 PDF</h3>
+              <div className="space-y-3">
+                <Link href="/compress/pdf-compressor" className="block text-gray-700 hover:text-[#080c2a] transition-colors">PDF Compressor</Link>
+              </div>
+            </div>
+
+            {/* GIF */}
+            <div className="bg-white shadow-lg rounded-xl p-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">🎞️ GIF</h3>
+              <div className="space-y-3">
+                <Link href="/compress/gif-compressor" className="block text-gray-700 hover:text-[#080c2a] transition-colors">GIF Compressor</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Back to Home */}
+        <div className="text-center">
+          <Link 
+            href="/" 
+            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-[#080c2a] hover:bg-[#080c2a]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#080c2a] shadow-lg transition-colors"
+          >
+            Back to Homepage
+          </Link>
+        </div>
+      </div>
+    </div>
   );
 }

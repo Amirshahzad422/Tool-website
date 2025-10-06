@@ -39,15 +39,18 @@ export default function HeicToJpgClient() {
       return;
     }
 
-    // Simulate upload progress (HEIC preview not available)
-    setIsUploading(true);
-    setUploadProgress(0);
-    setUploadingFileName(selectedFile.name);
+    // Set file immediately for FileUpload component
+    setFile(selectedFile);
     setError(null);
     setConvertedImage(null);
     setConvertedFileName('');
     setConvertedFileSize(0);
     setPreview(null);
+
+    // Simulate upload progress (HEIC preview not available)
+    setIsUploading(true);
+    setUploadProgress(0);
+    setUploadingFileName(selectedFile.name);
 
     let current = 0;
     const interval = setInterval(() => {
@@ -58,7 +61,6 @@ export default function HeicToJpgClient() {
         setTimeout(() => {
           setIsUploading(false);
           setUploadProgress(100);
-          setFile(selectedFile);
           setUploadingFileName("");
         }, 200);
       }
@@ -130,8 +132,8 @@ export default function HeicToJpgClient() {
       <FileUpload
         placeholder="Choose Files"
         icon=""
-        boxed={false}
-        showHelp={false}
+        boxed={true}
+        showHelp={true}
         maxFileSize={MAX_FILE_SIZE}
         allowedMimeTypes={ALLOWED_MIME_TYPES}
         allowedExtensions={ALLOWED_EXTENSIONS}

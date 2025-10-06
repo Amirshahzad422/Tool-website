@@ -126,7 +126,7 @@ export default function PricingPage() {
 
           {/* Back to Home */}
           <Link 
-            href="/' 
+            href="/" 
             className="text-sm text-gray-600 hover:text-[#080c2a] transition-colors"
           >
             Back to Homepage
@@ -134,5 +134,5 @@ export default function PricingPage() {
         </div>
       </div>
     </div>
-  );
+  );  
 }

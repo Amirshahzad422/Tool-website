@@ -118,7 +118,7 @@ export default function Navbar() {
                     <Link href="/convert/heic-jpg" onClick={closeAll} className="block px-3 py-2 rounded-lg text-gray-900 hover:bg-white/70">HEIC to JPG</Link>
                     <Link href="/convert/heic-png" onClick={closeAll} className="block px-3 py-2 rounded-lg text-gray-900 hover:bg-white/70">HEIC to PNG</Link>
                     <Link href="/convert/webp-jpg" onClick={closeAll} className="block px-3 py-2 rounded-lg text-gray-900 hover:bg-white/70">WEBP to JPG</Link>
-                    <Link href="/convert/svg-converter" onClick={closeAll} className="block px-3 py-2 rounded-lg text-gray-900 hover:bg-white/70">SVG Converter</Link>
+                    <Link href="/convert/svg-converter" onClick={closeAll} className="block px-3 py-2 rounded-lg text-gray-900 hover:bg-white/70">SVG to PNG</Link>
                   </div>
                 )}
 

@@ -176,8 +176,8 @@ export default function WebmToGifClient() {
       <FileUpload
         placeholder="Choose Files"
         icon=""
-        boxed={false}
-        showHelp={false}
+        boxed={true}
+        showHelp={true}
         maxFileSize={MAX_FILE_SIZE}
         allowedMimeTypes={ALLOWED_MIME_TYPES}
         allowedExtensions={ALLOWED_EXTENSIONS}
@@ -196,92 +196,4 @@ export default function WebmToGifClient() {
     </div>
   );
 
-          {/* Upload Progress */}
-          {isUploading && (
-            <div className="mt-4 bg-white border border-gray-200 rounded-xl p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                  <span className="text-sm text-gray-800">Uploading {uploadingFileName}…</span>
-                </div>
-                <span className="text-sm text-gray-500">{Math.round(uploadProgress)}%</span>
-              </div>
-              <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
-                  style={{ width: `${uploadProgress}%` }}
-                />
-              </div>
-            </div>
-          )}
-
-          {error && (
-            <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl" role="alert">
-              <span className="block sm:inline">{error}</span>
-            </div>
-          )}
-
-          {/* Progress Bar */}
-          {isLoading && (
-            <div className="mt-4 bg-white border border-gray-200 rounded-xl p-4">
-              <h4 className="font-semibold text-gray-900 mb-3">Converting WEBM</h4>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-700">Processing...</span>
-                  <span className="text-sm font-medium text-gray-900">{progress}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-gray-700 h-2 rounded-full transition-all" 
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-                <p className="text-xs text-gray-600">
-                  Converting WEBM to animated GIF with optimized settings...
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Convert Button - Only show after file upload and before conversion */}
-          {video && !gif && (
-            <button
-              onClick={handleConvert}
-              disabled={isLoading}
-              className="mt-4 w-full py-4 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50"
-            >
-              <span className="flex items-center justify-center gap-3">
-                {isLoading ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Converting to GIF...
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-                    </svg>
-                    Convert to GIF
-                  </>
-                )}
-              </span>
-            </button>
-          )}
-
-          {/* Download Button - Only show after conversion */}
-          {gif && (
-            <button
-              onClick={handleDownload}
-              className="mt-4 w-full py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-colors"
-            >
-              <span className="flex items-center justify-center gap-3">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Download GIF File
-              </span>
-            </button>
-          )}
-        </div>
-  );
 }

@@ -8,6 +8,7 @@ export default function ImageToPdfPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [convertedPdfUrl, setConvertedPdfUrl] = useState<string | null>(null);
   const [convertedFileName, setConvertedFileName] = useState<string>("");
+  const [convertedFileSize, setConvertedFileSize] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -34,32 +35,19 @@ export default function ImageToPdfPage() {
       resetState();
       return;
     }
-    setIsUploading(true);
-    setUploadProgress(0);
-    setUploadingFileName(selectedFile.name);
+    // Add immediately so UI updates right away
+    setFiles(prev => {
+      const exists = prev.some(f => f.name === selectedFile.name && f.size === selectedFile.size);
+      if (exists) return prev;
+      return [...prev, selectedFile];
+    });
     setError(null);
     setConvertedPdfUrl(null);
     setConvertedFileName('');
-
-    let current = 0;
-    const interval = setInterval(() => {
-      current += Math.random() * 20 + 5;
-      if (current >= 100) {
-        current = 100;
-        clearInterval(interval);
-        setTimeout(() => {
-          setIsUploading(false);
-          setUploadProgress(100);
-          setFiles(prev => {
-            const exists = prev.some(f => f.name === selectedFile.name && f.size === selectedFile.size);
-            if (exists) return prev;
-            return [...prev, selectedFile];
-          });
-          setUploadingFileName("");
-        }, 200);
-      }
-      setUploadProgress(current);
-    }, 150);
+    // Clear simulated upload state
+    setIsUploading(false);
+    setUploadProgress(0);
+    setUploadingFileName("");
   };
 
   async function handleConvert() {
@@ -88,6 +76,11 @@ export default function ImageToPdfPage() {
 
       setConvertedPdfUrl(url);
       setConvertedFileName("images.pdf");
+      // Track result size for FileUpload summary
+      try {
+        // blob.size is reliable for response.blob()
+        setConvertedFileSize(blob.size);
+      } catch {}
       setConvertProgress(100);
     } catch (err) {
       console.error(err);
@@ -134,74 +127,18 @@ export default function ImageToPdfPage() {
                   allowedExtensions={ALLOWED_EXTENSIONS}
                   onFileChange={handleFileChange}
                   onError={setError}
+                  actionButtonText="Convert to PDF"
+                  onAction={handleConvert}
+                  isLoading={isLoading}
+                  showResult={!!convertedPdfUrl}
+                  resultUrl={convertedPdfUrl || undefined}
+                  resultFileName={convertedFileName}
+                  resultFileSize={convertedFileSize}
+                  onDownload={handleDownload}
                 />
               </div>
             </div>
-            <p className="mt-3 text-sm text-gray-600">Max file size 500Mb. <a href="#" className="underline">Login</a> for more</p>
-            <p className="mt-1 text-xs text-gray-500">By proceeding, you agree to our <a href="#" className="underline">Terms of Use</a>.</p>
           </div>
-
-          {isUploading && (
-            <div className="mt-4 bg-white border border-gray-200 rounded-xl p-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-800">Uploading {uploadingFileName}…</span>
-                <span className="text-sm text-gray-600">{Math.round(uploadProgress)}%</span>
-              </div>
-              <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                <div className="bg-gray-700 h-2 rounded-full transition-all" style={{ width: `${uploadProgress}%` }} />
-              </div>
-            </div>
-          )}
-
-          {error && (
-            <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl" role="alert">
-              <span className="block sm:inline">{error}</span>
-            </div>
-          )}
-
-          {files.length > 0 && (
-            <div className="bg-gray-200/50 border border-gray-300/50 rounded-xl p-4 backdrop-blur-sm mt-4">
-              <div className="text-sm text-gray-700 font-medium mb-2">Selected images ({files.length})</div>
-              <ul className="max-h-40 overflow-auto space-y-1 text-sm text-gray-700">
-                {files.map((f, idx) => (
-                  <li key={idx} className="flex justify-between">
-                    <span className="truncate mr-3">{f.name}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {files.length > 0 && !convertedPdfUrl && (
-            <button
-              onClick={handleConvert}
-              disabled={isLoading}
-              className="mt-4 w-full py-4 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50"
-            >
-              {isLoading ? `Converting… ${Math.round(convertProgress)}%` : 'Convert to PDF'}
-            </button>
-          )}
-
-          {isLoading && (
-            <div className="bg-gray-200/50 border border-gray-300/50 rounded-xl p-6 backdrop-blur-sm mt-4">
-              <div className="flex items-center justify-between mb-2 text-sm text-gray-700">
-                <span>Converting…</span>
-                <span>{Math.round(convertProgress)}%</span>
-              </div>
-              <div className="w-full bg-gray-300/50 rounded-full h-2">
-                <div className="bg-gradient-to-r from-gray-700 to-gray-800 h-2 rounded-full transition-all duration-300 ease-out" style={{ width: `${convertProgress}%` }} />
-              </div>
-            </div>
-          )}
-
-          {convertedPdfUrl && (
-            <button
-              onClick={handleDownload}
-              className="mt-4 w-full py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-colors"
-            >
-              Download PDF File
-            </button>
-          )}
         </div>
       </div>
     </div>

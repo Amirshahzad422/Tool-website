@@ -48,27 +48,38 @@ export default function GifCompressorClient() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Compression failed');
+        let message = 'Compression failed';
+        try {
+          const errJson = await response.json();
+          message = errJson.error || message;
+        } catch {}
+        throw new Error(message);
       }
 
-      const data = await response.json();
-
-      if (data.success && data.compressedData) {
-        // Convert base64 to blob
-        const binaryString = atob(data.compressedData);
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        const data = await response.json();
+        if (data.success && data.compressedData) {
+          const binaryString = atob(data.compressedData);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          const blob = new Blob([bytes], { type: 'image/gif' });
+          const url = URL.createObjectURL(blob);
+          setOutUrl(url);
+          setCompressedFileSize(data.compressedSize || blob.size);
+          setCompressedFileName(data.fileName || (gifFile.name.replace(/\.[^.]+$/, '') + '-compressed.gif'));
+        } else {
+          throw new Error('Invalid response from server');
         }
-        const blob = new Blob([bytes], { type: 'image/gif' });
-        const url = URL.createObjectURL(blob);
-        
-        setOutUrl(url);
-        setCompressedFileSize(data.compressedSize);
-        setCompressedFileName(data.fileName);
       } else {
-        throw new Error('Invalid response from server');
+        // Assume binary GIF stream
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        setOutUrl(url);
+        setCompressedFileSize(blob.size);
+        setCompressedFileName(gifFile.name.replace(/\.[^.]+$/, '') + '-compressed.gif');
       }
     } catch (err: any) {
       console.error('Compression error:', err);
@@ -94,8 +105,8 @@ export default function GifCompressorClient() {
       <FileUpload
         placeholder="Choose Files"
         icon=""
-        boxed={false}
-        showHelp={false}
+        boxed={true}
+        showHelp={true}
         maxFileSize={MAX_FILE_SIZE}
         allowedMimeTypes={ALLOWED_MIME_TYPES}
         allowedExtensions={ALLOWED_EXTENSIONS}

@@ -166,8 +166,8 @@ export default function GifToApngClient() {
       <FileUpload
         placeholder="Choose Files"
         icon=""
-        boxed={false}
-        showHelp={false}
+        boxed={true}
+        showHelp={true}
         maxFileSize={MAX_FILE_SIZE}
         allowedMimeTypes={ALLOWED_MIME_TYPES}
         allowedExtensions={ALLOWED_EXTENSIONS}
@@ -185,43 +185,4 @@ export default function GifToApngClient() {
       />
     </div>
   );
-
-      {isUploading && (
-        <div className="mt-4 bg-white border border-gray-200 rounded-xl p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-800">Uploading {uploadingFileName}…</span>
-            <span className="text-sm text-gray-600">{Math.round(uploadProgress)}%</span>
-          </div>
-          <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-            <div className="bg-gray-700 h-2 rounded-full transition-all" style={{ width: `${uploadProgress}%` }} />
-          </div>
-        </div>
-      )}
-
-      {error && (
-        <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl" role="alert">
-          <span className="block sm:inline">{error}</span>
-        </div>
-      )}
-
-      {gif && !apngUrl && (
-        <button
-          onClick={handleConvert}
-          disabled={isLoading}
-          className="mt-4 w-full py-4 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50"
-        >
-          {isLoading ? `Converting… ${progress}%` : 'Convert to APNG'}
-        </button>
-      )}
-
-      {apngUrl && (
-        <button
-          onClick={handleDownload}
-          className="mt-4 w-full py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-colors"
-        >
-          Download APNG File
-        </button>
-      )}
-    </div>
-  );
-} 
+}

@@ -52,7 +52,7 @@ export default function ConvertPage() {
         { id: "heic-jpg", title: "HEIC to JPG", desc: "Convert HEIC images to JPG format", icon: "📱", href: "/convert/heic-jpg", implemented: true },
         { id: "heic-png", title: "HEIC to PNG", desc: "Convert HEIC images to PNG format", icon: "📲", href: "/convert/heic-png", implemented: true },
         { id: "webp-jpg", title: "WEBP to JPG", desc: "Convert WEBP images to JPG format", icon: "🌄", href: "/convert/webp-jpg", implemented: true },
-        { id: "svg-converter", title: "SVG Converter", desc: "Convert SVG to and from other formats", icon: "✨", href: "/convert/svg-converter", implemented: true },
+        { id: "svg-converter", title: "SVG to PNG", desc: "Convert SVG to and from other formats", icon: "✨", href: "/convert/svg-converter", implemented: true },
       ],
     },
     {

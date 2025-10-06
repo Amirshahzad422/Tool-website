@@ -71,7 +71,7 @@ export default function DesktopNavbar() {
                       <Link href="/convert/heic-jpg" onClick={closeAll} className="group flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"><span>HEIC to JPG</span></Link>
                       <Link href="/convert/heic-png" onClick={closeAll} className="group flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"><span>HEIC to PNG</span></Link>
                       <Link href="/convert/webp-jpg" onClick={closeAll} className="group flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"><span>WEBP to JPG</span></Link>
-                      <Link href="/convert/svg-converter" onClick={closeAll} className="group flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"><span>SVG Converter</span></Link>
+                      <Link href="/convert/svg-converter" onClick={closeAll} className="group flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"><span>SVG to PNG</span></Link>
                     </div>
                     {/* PDF & More */}
                     <div className="space-y-1 px-6">
@@ -159,9 +159,8 @@ export default function DesktopNavbar() {
               )}
             </div>
             {/* Tools, API, Pricing */}
-            <Link href="/tools" className="text-gray-800 hover:text-gray-900 transition-all duration-200 font-semibold px-5 py-3 rounded-lg hover:shadow-md">Tools</Link>
-            <Link href="/api" className="text-gray-800 hover:text-gray-900 transition-all duration-200 font-semibold px-5 py-3 rounded-lg hover:shadow-md">API</Link>
-            <Link href="/pricing" className="text-gray-800 hover:text-gray-900 transition-all duration-200 font-semibold px-5 py-3 rounded-lg hover:shadow-md">Pricing</Link>
+            <Link href="/api" className="text-gray-800 hover:text-gray-900 transition-all duration-200 font-semibold px-5 py-3 rounded-lg">API</Link>
+            <Link href="/pricing" className="text-gray-800 hover:text-gray-900 transition-all duration-200 font-semibold px-5 py-3 rounded-lg">Pricing</Link>
           </div>
         </div>
         <div className="flex items-center gap-3">

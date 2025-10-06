@@ -157,7 +157,7 @@ export default function AudioConverterClient() {
               allowedExtensions={ALLOWED_EXTENSIONS}
               icon=""
               placeholder="Upload an audio file to convert"
-              boxed={false}
+              boxed={true}
               showHelp={false}
               className="space-y-2"
             />

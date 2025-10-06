@@ -52,23 +52,30 @@ export default function JpegCompressorClient() {
         throw new Error(errorData.error || 'Compression failed');
       }
 
-      const data = await response.json();
-
-      if (data.success && data.compressedData) {
-        // Convert base64 to blob
-        const binaryString = atob(data.compressedData);
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('application/json')) {
+        const data = await response.json();
+        if (data.success && data.compressedData) {
+          const binaryString = atob(data.compressedData);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          const blob = new Blob([bytes], { type: 'image/jpeg' });
+          const url = URL.createObjectURL(blob);
+          setResultUrl(url);
+          setOutSize(data.compressedSize || blob.size);
+          setCompressedFileName(data.fileName || file.name.replace(/\.[^.]+$/, '') + '-compressed.jpg');
+        } else {
+          throw new Error('Invalid response from server');
         }
-        const blob = new Blob([bytes], { type: 'image/jpeg' });
-        const url = URL.createObjectURL(blob);
-        
-        setResultUrl(url);
-        setOutSize(data.compressedSize);
-        setCompressedFileName(data.fileName);
       } else {
-        throw new Error('Invalid response from server');
+        // Assume binary JPEG stream
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        setResultUrl(url);
+        setOutSize(blob.size);
+        setCompressedFileName(file.name.replace(/\.[^.]+$/, '') + '-compressed.jpg');
       }
     } catch (err: any) {
       console.error('Compression error:', err);
@@ -94,8 +101,8 @@ export default function JpegCompressorClient() {
       <FileUpload
         placeholder="Choose Files"
         icon=""
-        boxed={false}
-        showHelp={false}
+        boxed={true}
+        showHelp={true}
         maxFileSize={MAX_FILE_SIZE}
         allowedMimeTypes={ALLOWED_MIME_TYPES}
         allowedExtensions={ALLOWED_EXTENSIONS}

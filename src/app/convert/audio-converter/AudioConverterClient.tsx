@@ -44,13 +44,18 @@ export default function AudioConverterClient() {
       resetState();
       return;
     }
-    setIsUploading(true);
-    setUploadProgress(0);
-    setUploadingFileName(selectedFile.name);
+
+    // Set file immediately for FileUpload component
+    setFile(selectedFile);
     setError(null);
     setConvertedAudioUrl(null);
     setConvertedFileName('');
     setConvertedFileSize(0);
+
+    // Simulate upload progress
+    setIsUploading(true);
+    setUploadProgress(0);
+    setUploadingFileName(selectedFile.name);
 
     let current = 0;
     const interval = setInterval(() => {
@@ -61,7 +66,6 @@ export default function AudioConverterClient() {
         setTimeout(() => {
           setIsUploading(false);
           setUploadProgress(100);
-          setFile(selectedFile);
           setUploadingFileName('');
         }, 200);
       }
@@ -157,8 +161,8 @@ export default function AudioConverterClient() {
       <FileUpload
         placeholder="Choose Files"
         icon=""
-        boxed={false}
-        showHelp={false}
+        boxed={true}
+        showHelp={true}
         maxFileSize={MAX_FILE_SIZE}
         allowedMimeTypes={ALLOWED_MIME_TYPES}
         allowedExtensions={ALLOWED_EXTENSIONS}

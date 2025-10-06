@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function JpgToPdfPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300">
+    <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 pt-16 pb-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-6">

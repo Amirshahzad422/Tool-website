@@ -204,141 +204,152 @@ export default function TimeConverterClient() {
   }, [inputValue, fromUnit, toUnit, convertValue]);
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="bg-transparent p-8">
-        <div className="space-y-6">
-          {/* Category Selection */}
-          <div className="bg-gray-200/50 border border-gray-300/50 rounded-xl p-6 backdrop-blur-sm">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Time Categories</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {timeCategories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`text-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                    selectedCategory === category.id
-                      ? "bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-lg"
-                      : "bg-gray-300/50 text-gray-900 hover:bg-gray-400/50 border border-gray-300/50"
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 py-8 px-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold text-[#080c2a] mb-3">Time Converter</h1>
+          <p className="text-slate-600 text-lg">Convert between time units instantly with precision</p>
+        </div>
+
+        {/* Category Selection */}
+        <div className="bg-white rounded-2xl shadow-xl p-6 mb-8 border border-slate-200">
+          <h2 className="text-xl font-semibold text-[#080c2a] mb-5 flex items-center gap-2">
+            <span className="w-1.5 h-6 bg-gradient-to-b from-blue-500 to-indigo-600 rounded-full"></span>
+            Select Category
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            {timeCategories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+                className={`group relative overflow-hidden px-4 py-5 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${selectedCategory === category.id
+                    ? "bg-gradient-to-br from-[#080c2a] to-indigo-900 text-white shadow-lg shadow-indigo-500/30"
+                    : "bg-gradient-to-br from-slate-50 to-slate-100 text-slate-700 hover:from-slate-100 hover:to-slate-200 border border-slate-200"
                   }`}
-                >
-                  <div className="text-2xl mb-1">{category.icon}</div>
-                  <div className="text-xs">{category.name}</div>
-                </button>
-              ))}
-            </div>
+              >
+                <div className="flex flex-col items-center gap-2">
+                  <span className="text-2xl">{category.icon}</span>
+                  <span className="text-xs font-semibold">{category.name}</span>
+                </div>
+                {selectedCategory === category.id && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse"></div>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Conversion Interface */}
+        <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-200">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold text-[#080c2a] flex items-center gap-3">
+              <span className="text-3xl">{currentCategory?.icon}</span>
+              {currentCategory?.name} Conversion
+            </h2>
+            <button
+              onClick={() => { setInputValue(""); setResult(""); setAdditionalInfo(null); }}
+              className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-[#080c2a] bg-slate-100 hover:bg-slate-200 rounded-lg transition-all duration-200"
+            >
+              Clear All
+            </button>
           </div>
 
-          {/* Conversion Interface */}
-          <div className="bg-gray-200/50 border border-gray-300/50 rounded-xl p-6 backdrop-blur-sm">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">
-              {currentCategory?.icon} {currentCategory?.name} Conversion
-            </h3>
-          
-            {/* Conversion Interface */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* From Section */}
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Value
-                  </label>
-                  <input
-                    type="text"
-                    value={inputValue}
-                    onChange={handleInputChange}
-                    placeholder="Enter time value"
-                    className="w-full px-4 py-3 border border-gray-300/50 rounded-xl text-gray-900 bg-gray-300/50 focus:outline-none focus:ring-2 focus:ring-gray-500/50 focus:border-gray-500/50 transition-all duration-200 text-lg"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    From Unit
-                  </label>
-                  <select
-                    value={fromUnit}
-                    onChange={(e) => setFromUnit(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300/50 rounded-xl text-gray-900 bg-gray-300/50 focus:outline-none focus:ring-2 focus:ring-gray-500/50 focus:border-gray-500/50 transition-all duration-200"
-                  >
-                    {currentCategory?.units.map((unit) => (
-                      <option key={unit.id} value={unit.id}>
-                        {unit.name} ({unit.symbol})
-                      </option>
-                    ))}
-                  </select>
-                </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+            {/* From Section */}
+            <div className="space-y-5">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">From Unit</label>
+                <select
+                  value={fromUnit}
+                  onChange={(e) => setFromUnit(e.target.value)}
+                  className="w-full px-4 py-3.5 border-2 border-slate-200 rounded-xl text-[#080c2a] bg-white hover:border-[#080c2a] focus:outline-none focus:border-[#080c2a] transition-all duration-200 font-medium"
+                >
+                  {currentCategory?.units.map((unit) => (
+                    <option key={unit.id} value={unit.id}>
+                      {unit.name} ({unit.symbol})
+                    </option>
+                  ))}
+                </select>
               </div>
 
-              {/* To Section */}
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Result
-                  </label>
-                  <input
-                    type="text"
-                    value={result}
-                    readOnly
-                    placeholder="Result will appear here"
-                    className="w-full px-4 py-3 border border-gray-300/50 rounded-xl text-gray-900 bg-gray-300/50 focus:outline-none"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    To Unit
-                  </label>
-                  <select
-                    value={toUnit}
-                    onChange={(e) => setToUnit(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300/50 rounded-xl text-gray-900 bg-gray-300/50 focus:outline-none focus:ring-2 focus:ring-gray-500/50 focus:border-gray-500/50 transition-all duration-200"
-                  >
-                    {currentCategory?.units.map((unit) => (
-                      <option key={unit.id} value={unit.id}>
-                        {unit.name} ({unit.symbol})
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Value</label>
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={handleInputChange}
+                  placeholder="Enter time value"
+                  className="w-full px-4 py-3.5 border-2 border-slate-200 rounded-xl text-[#080c2a] bg-white hover:border-[#080c2a] focus:outline-none focus:border-[#080c2a] transition-all duration-200 text-lg"
+                />
               </div>
             </div>
 
             {/* Swap Button */}
-            <div className="flex justify-center">
+            <div className="flex items-center justify-center">
               <button
                 onClick={swapUnits}
-                className="p-3 rounded-full bg-gray-200/50 border border-gray-300/50 hover:bg-gray-300/50 transition-all duration-200 shadow-lg hover:shadow-gray-500/25 transform hover:-translate-y-0.5"
+                className="p-2.5 rounded-lg bg-gradient-to-br from-[#080c2a] to-indigo-900 text-white shadow-md transition-all duration-300"
                 title="Swap units"
               >
-                <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
                 </svg>
               </button>
             </div>
 
-            {/* Convert Button */}
-            <button
-              onClick={convertValue}
-              disabled={!inputValue || isConverting}
-              className="w-full py-4 bg-gradient-to-r from-gray-900/90 to-gray-800/90 backdrop-blur-sm text-white font-semibold rounded-xl hover:from-gray-900 hover:to-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none relative z-10"
-            >
-              <span className="flex items-center justify-center gap-3">
-                {isConverting ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Converting...
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Convert Time
-                  </>
-                )}
-              </span>
-            </button>
+            {/* To Section */}
+            <div className="space-y-5">
+              <div className="flex items-center justify-between">
+                <label className="block text-sm font-semibold text-slate-700">To Unit</label>
+              </div>
+              <select
+                value={toUnit}
+                onChange={(e) => setToUnit(e.target.value)}
+                className="w-full px-4 py-3.5 border-2 border-slate-200 rounded-xl text-[#080c2a] bg-white hover:border-[#080c2a] focus:outline-none focus:border-[#080c2a] transition-all duration-200 font-medium"
+              >
+                {currentCategory?.units.map((unit) => (
+                  <option key={unit.id} value={unit.id}>
+                    {unit.name} ({unit.symbol})
+                  </option>
+                ))}
+              </select>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Result</label>
+                <input
+                  type="text"
+                  value={result}
+                  readOnly
+                  placeholder="Result will appear here"
+                  className="w-full px-4 py-3.5 border-2 border-slate-200 rounded-xl text-[#080c2a] bg-white hover:border-[#080c2a] focus:outline-none focus:border-[#080c2a] transition-all duration-200 text-lg"
+                />
+              </div>
+            </div>
           </div>
+
+          {/* Convert Button */}
+          <button
+            onClick={convertValue}
+            disabled={!inputValue || isConverting}
+            className="mt-8 w-full py-4 bg-gradient-to-r from-gray-900/90 to-gray-800/90 backdrop-blur-sm text-white font-semibold rounded-xl hover:from-gray-900 hover:to-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none relative z-10"
+          >
+            <span className="flex items-center justify-center gap-3">
+              {isConverting ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Converting...
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Convert Time
+                </>
+              )}
+            </span>
+          </button>
         </div>
       </div>
     </div>

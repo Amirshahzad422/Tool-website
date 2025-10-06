@@ -33,23 +33,31 @@ export const useFileUpload = (options: FileUploadOptions = {}) => {
     if (file.size > maxFileSize) {
       const errorMsg = `File size exceeds the limit of ${(maxFileSize / (1024 * 1024)).toFixed(0)}MB.`;
       setError(errorMsg);
-      onError?.(errorMsg);
       return false;
     }
 
-    // Check MIME type (only when the browser provides one)
-    if (allowedMimeTypes.length > 0 && file.type && !allowedMimeTypes.includes(file.type)) {
-      const errorMsg = 'Invalid file type. Please select a supported file format.';
-      setError(errorMsg);
-      onError?.(errorMsg);
-      return false;
-    }
-
-    // Check file extension
+    // Check file extension first (more reliable than MIME type)
     if (allowedExtensions.length > 0) {
       const fileExtension = file.name.split('.').pop()?.toLowerCase();
       if (!fileExtension || !allowedExtensions.includes(fileExtension)) {
         const errorMsg = 'Invalid file extension. Please select a supported file format.';
+        setError(errorMsg);
+        onError?.(errorMsg);
+        return false;
+      }
+    }
+
+    // Check MIME type only if extension check passed and MIME type is provided by browser
+    if (allowedMimeTypes.length > 0 && file.type && file.type !== '') {
+      // For HEIC files, browsers often report different MIME types, so be more lenient
+      const isHeicFile = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
+      const isHeicMimeType = allowedMimeTypes.some(mime => mime.includes('heic') || mime.includes('heif'));
+      
+      if (isHeicFile && isHeicMimeType) {
+        // Skip MIME type validation for HEIC files as browsers are inconsistent
+        console.log('[useFileUpload] Skipping MIME validation for HEIC file:', file.name);
+      } else if (!allowedMimeTypes.includes(file.type)) {
+        const errorMsg = 'Invalid file type. Please select a supported file format.';
         setError(errorMsg);
         onError?.(errorMsg);
         return false;
@@ -61,14 +69,47 @@ export const useFileUpload = (options: FileUploadOptions = {}) => {
   }, [maxFileSize, allowedMimeTypes, allowedExtensions, onError]);
 
   const handleFileSelect = useCallback((file: File) => {
+    console.log('[useFileUpload] handleFileSelect called with:', file.name);
     if (validateFile(file)) {
+      console.log('[useFileUpload] File validation passed, calling onFileSelect');
       onFileSelect?.(file);
+    } else {
+      console.log('[useFileUpload] File validation failed');
     }
   }, [validateFile, onFileSelect]);
 
   const handleDeviceUpload = useCallback(() => {
-    fileInputRef.current?.click();
-  }, []);
+    console.log('[useFileUpload] handleDeviceUpload called');
+
+    // Prefer a transient input to avoid any ref/hydration/overlay issues
+    const transient = document.createElement('input');
+    transient.type = 'file';
+
+    // Build accept string from provided options
+    const mimes = (allowedMimeTypes || []).filter(Boolean);
+    const exts = (allowedExtensions || []).filter(Boolean).map(ext => `.${ext.replace(/^\./, '')}`);
+    const seen: Record<string, boolean> = {};
+    const combined = [...mimes, ...exts].filter(v => (v && !seen[v] ? (seen[v] = true) : false));
+    if (combined.length) transient.accept = combined.join(',');
+
+    transient.style.position = 'fixed';
+    transient.style.left = '-9999px';
+    document.body.appendChild(transient);
+
+    const onTransientChange = (evt: Event) => {
+      const input = evt.currentTarget as HTMLInputElement;
+      const file = input.files?.[0] || null;
+      console.log('[useFileUpload] transient input change file:', file?.name);
+      if (file) {
+        handleFileSelect(file);
+      }
+      input.removeEventListener('change', onTransientChange);
+      document.body.removeChild(input);
+    };
+
+    transient.addEventListener('change', onTransientChange, { once: true } as AddEventListenerOptions);
+    transient.click();
+  }, [allowedMimeTypes, allowedExtensions, handleFileSelect]);
 
   // Convert provider share links to direct download URLs
   const toDirectDownloadUrl = useCallback((inputUrl: string): string => {
@@ -165,7 +206,7 @@ export const useFileUpload = (options: FileUploadOptions = {}) => {
     {
       id: 'device',
       label: 'From Device',
-      icon: '💻',
+      icon: 'device',
       action: handleDeviceUpload
     },
     // {
@@ -177,7 +218,7 @@ export const useFileUpload = (options: FileUploadOptions = {}) => {
     {
       id: 'google-drive',
       label: 'From Google Drive',
-      icon: '☁️',
+      icon: 'drive',
       action: handleGoogleDriveUpload
     },
     // {
@@ -189,15 +230,21 @@ export const useFileUpload = (options: FileUploadOptions = {}) => {
     {
       id: 'url',
       label: 'From Url',
-      icon: '🔗',
+      icon: 'url',
       action: handleGenericUrlUpload
     }
   ];
 
   const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const input = e.currentTarget;
+    const file = input.files?.[0];
+    console.log('[useFileUpload] handleFileInputChange called with file:', file?.name, 'type:', file?.type);
     if (file) {
       handleFileSelect(file);
+      // reset value to allow selecting the same file twice in a row
+      input.value = '';
+    } else {
+      console.log('[useFileUpload] No file received from input change');
     }
   }, [handleFileSelect]);
 
