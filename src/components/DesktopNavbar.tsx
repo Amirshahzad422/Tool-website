@@ -8,11 +8,13 @@ import { FaTools } from "react-icons/fa";
 export default function DesktopNavbar() {
   const [openConvert, setOpenConvert] = useState(false);
   const [openCompress, setOpenCompress] = useState(false);
+  const [openTools, setOpenTools] = useState(false);
   const pathname = usePathname();
 
   const closeAll = () => {
     setOpenConvert(false);
     setOpenCompress(false);
+    setOpenTools(false);
   };
 
   useEffect(() => {
@@ -158,7 +160,61 @@ export default function DesktopNavbar() {
                 </div>
               )}
             </div>
-            {/* Tools, API, Pricing */}
+            {/* Tools */}
+            <div
+              className="relative"
+              onMouseEnter={() => setOpenTools(true)}
+              onMouseLeave={() => setOpenTools(false)}
+            >
+              <button
+                className="relative text-gray-800 hover:text-gray-900 transition-all duration-200 font-semibold px-5 py-3 rounded-lg hover:bg-white/60 flex items-center gap-2"
+                aria-haspopup="menu"
+                aria-expanded={openTools}
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  Tools
+                  <svg className={`w-5 h-5 transition-transform ${openTools ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </span>
+              </button>
+              {openTools && (
+                <div className="transition-all duration-200 absolute left-0 top-full mt-2 rounded-xl border border-gray-200 bg-white shadow-xl p-5 z-[99999] min-w-[400px]">
+                  <div className="absolute -top-2 left-10 w-4 h-4 bg-white border-t border-l border-gray-200 rotate-45"></div>
+                  <div className="grid grid-cols-1 gap-4">
+                    {/* Color & Design Tools */}
+                    <div className="space-y-1">
+                      <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wide mb-2">Color & Design</h4>
+                      <Link href="/tools/color-picker" onClick={closeAll} className="group flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                        <div className="w-4 h-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded"></div>
+                        <span>Color Picker</span>
+                      </Link>
+                    </div>
+                    {/* Audio Tools */}
+                    <div className="space-y-1">
+                      <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wide mb-2">Audio Tools</h4>
+                      <Link href="/tools/audio-joiner" onClick={closeAll} className="group flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                        <div className="w-4 h-4 bg-gradient-to-r from-orange-500 to-red-500 rounded"></div>
+                        <span>Audio Joiner</span>
+                      </Link>
+                    </div>
+                    {/* Utility Tools */}
+                    <div className="space-y-1">
+                      <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wide mb-2">Utility Tools</h4>
+                      <Link href="/tools/image-cropper" onClick={closeAll} className="group flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                        <div className="w-4 h-4 bg-gradient-to-r from-green-500 to-teal-500 rounded"></div>
+                        <span>Image Cropper</span>
+                      </Link>
+                      <Link href="/tools/image-rotate" onClick={closeAll} className="group flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                        <div className="w-4 h-4 bg-gradient-to-r from-blue-500 to-indigo-500 rounded"></div>
+                        <span>Rotate Image</span>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* API, Pricing */}
             <Link href="/api" className="text-gray-800 hover:text-gray-900 transition-all duration-200 font-semibold px-5 py-3 rounded-lg">API</Link>
             <Link href="/pricing" className="text-gray-800 hover:text-gray-900 transition-all duration-200 font-semibold px-5 py-3 rounded-lg">Pricing</Link>
           </div>

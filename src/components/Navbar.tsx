@@ -8,6 +8,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openConvert, setOpenConvert] = useState(false);
   const [openCompress, setOpenCompress] = useState(false);
+  const [openTools, setOpenTools] = useState(false);
   const [cvVideoAudio, setCvVideoAudio] = useState(false);
   const [cvImage, setCvImage] = useState(false);
   const [cvPdf, setCvPdf] = useState(false);
@@ -22,6 +23,7 @@ export default function Navbar() {
     setMobileOpen(false);
     setOpenConvert(false);
     setOpenCompress(false);
+    setOpenTools(false);
     setCvVideoAudio(false);
     setCvImage(false);
     setCvPdf(false);
@@ -262,6 +264,38 @@ export default function Navbar() {
                     <Link href="/compress/gif-compressor" onClick={closeAll} className="block px-3 py-2 rounded-lg text-gray-900 hover:bg-white/70">GIF Compressor</Link>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Tools */}
+            <button
+              className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-gray-900 font-semibold hover:bg-white/70"
+              onClick={() => setOpenTools((v) => !v)}
+            >
+              <span>Tools</span>
+              <svg className={`w-5 h-5 transition-transform ${openTools ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            {openTools && (
+              <div className="space-y-1 pl-2">
+                <Link href="/tools" onClick={closeAll} className="block px-3 py-2 rounded-lg text-gray-900 hover:bg-white/70">All Tools</Link>
+                
+                {/* Tools > Color & Design */}
+                <div className="space-y-1 pl-3">
+                  <Link href="/tools/color-picker" onClick={closeAll} className="block px-3 py-2 rounded-lg text-gray-900 hover:bg-white/70">🎨 Color Picker</Link>
+                </div>
+                
+                {/* Tools > Audio Tools */}
+                <div className="space-y-1 pl-3">
+                  <Link href="/tools/audio-joiner" onClick={closeAll} className="block px-3 py-2 rounded-lg text-gray-900 hover:bg-white/70">🎵 Audio Joiner</Link>
+                </div>
+                
+                {/* Tools > Utility Tools */}
+                <div className="space-y-1 pl-3">
+                  <Link href="/tools/image-cropper" onClick={closeAll} className="block px-3 py-2 rounded-lg text-gray-900 hover:bg-white/70">✂️ Image Cropper</Link>
+                  <Link href="/tools/image-rotate" onClick={closeAll} className="block px-3 py-2 rounded-lg text-gray-900 hover:bg-white/70">🔄 Rotate Image</Link>
+                </div>
               </div>
             )}
           </div>
