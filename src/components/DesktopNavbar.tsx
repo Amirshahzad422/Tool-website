@@ -197,6 +197,18 @@ export default function DesktopNavbar() {
                         <div className="w-4 h-4 bg-gradient-to-r from-orange-500 to-red-500 rounded"></div>
                         <span>Audio Joiner</span>
                       </Link>
+                      <Link href="/tools/audio-trimmer" onClick={closeAll} className="group flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                        <div className="w-4 h-4 bg-gradient-to-r from-purple-500 to-indigo-500 rounded"></div>
+                        <span>Audio Trimmer</span>
+                      </Link>
+                    </div>
+                    {/* Video Tools */}
+                    <div className="space-y-1">
+                      <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wide mb-2">Video Tools</h4>
+                      <Link href="/tools/video-joiner" onClick={closeAll} className="group flex items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                        <div className="w-4 h-4 bg-gradient-to-r from-purple-500 to-blue-500 rounded"></div>
+                        <span>Video Joiner</span>
+                      </Link>
                     </div>
                     {/* Utility Tools */}
                     <div className="space-y-1">

@@ -289,6 +289,7 @@ export default function Navbar() {
                 {/* Tools > Audio Tools */}
                 <div className="space-y-1 pl-3">
                   <Link href="/tools/audio-joiner" onClick={closeAll} className="block px-3 py-2 rounded-lg text-gray-900 hover:bg-white/70">🎵 Audio Joiner</Link>
+                  <Link href="/tools/audio-trimmer" onClick={closeAll} className="block px-3 py-2 rounded-lg text-gray-900 hover:bg-white/70">✂️ Audio Trimmer</Link>
                 </div>
                 
                 {/* Tools > Utility Tools */}

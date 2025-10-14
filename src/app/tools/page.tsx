@@ -145,6 +145,38 @@ export default function ToolsPage() {
               </a>
             </div>
           </div>
+
+          {/* Audio Trimmer Tool */}
+          <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+            <div className="p-6">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center mr-4">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-9-4h10a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900">Audio Trimmer</h3>
+                  <p className="text-gray-600 text-sm">Trim and cut audio files</p>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-6">
+                Trim your audio files with precision. Upload any audio file and cut it to the exact length you need with visual timeline controls.
+              </p>
+              <div className="flex flex-wrap gap-2 mb-4">
+                <span className="px-3 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">Precise Trim</span>
+                <span className="px-3 py-1 bg-indigo-100 text-indigo-800 text-xs rounded-full">Visual Timeline</span>
+                <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Multiple Formats</span>
+                <span className="px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full">Easy to Use</span>
+              </div>
+              <a
+                href="/tools/audio-trimmer"
+                className="block w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-center py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-indigo-600 transition-all duration-200"
+              >
+                Use Audio Trimmer
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
